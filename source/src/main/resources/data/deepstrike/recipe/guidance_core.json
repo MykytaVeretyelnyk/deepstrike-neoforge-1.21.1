@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ORO",
+    "GCG",
+    "ORO"
+  ],
+  "key": {
+    "O": {
+      "item": "deepstrike:optical_seeker"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "C": {
+      "item": "deepstrike:control_chip"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:guidance_core"
+  }
+}

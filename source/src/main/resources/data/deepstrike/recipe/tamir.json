@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " O ",
+    "GCG",
+    "FEF"
+  ],
+  "key": {
+    "O": {
+      "item": "deepstrike:optical_seeker"
+    },
+    "G": {
+      "item": "deepstrike:guidance_core"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "F": {
+      "item": "deepstrike:aerodynamic_fins"
+    },
+    "E": {
+      "item": "deepstrike:rocket_engine"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:tamir"
+  }
+}

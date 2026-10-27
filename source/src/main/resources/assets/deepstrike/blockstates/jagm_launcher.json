@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"deepstrike:block/launcher"},"facing=east":{"model":"deepstrike:block/launcher","y":90},"facing=south":{"model":"deepstrike:block/launcher","y":180},"facing=west":{"model":"deepstrike:block/launcher","y":270}}}

@@ -1,0 +1,13 @@
+{
+  "blend": {"func": "add", "srcrgb": "srcalpha", "dstrgb": "one_minus_src_alpha", "srcalpha": "one", "dstalpha": "one_minus_src_alpha"},
+  "vertex": "deepstrike:engine_volume",
+  "fragment": "deepstrike:engine_volume",
+  "attributes": ["Position", "UV0", "Color"],
+  "samplers": [],
+  "uniforms": [
+    {"name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name": "BurnStage", "type": "float", "count": 1, "values": [0.0]},
+    {"name": "JetAspect", "type": "float", "count": 1, "values": [0.0]}
+  ]
+}

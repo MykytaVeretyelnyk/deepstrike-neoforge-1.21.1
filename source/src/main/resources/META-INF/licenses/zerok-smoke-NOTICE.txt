@@ -1,0 +1,24 @@
+Zero-K / Spring smoke components
+
+Game: Zero-K, commit ee8950e2c9af13dfe5273df1348a4be0d2bd0b90
+https://github.com/ZeroK-RTS/Zero-K
+
+Textures imported from the game's bitmaps/PD directory:
+SmokeTrail.tga (trail.png), SmokeSmall.tga (smoke_small.png),
+smoke1.tga (smoke.png; also repeated in clouds.png).
+Upstream classifies these assets as PD (public domain).
+TGA decoded to PNG, unchanged RGBA pixels. The material applies a white-grey
+tint and stronger opacity at runtime. No proprietary War Thunder assets used.
+
+Spring/Recoil engine, commit bb3ff796755a74add1c624153c808edffe173347
+https://github.com/beyond-all-reason/RecoilEngine
+Copyright the Spring/Recoil contributors. GPL-2.0-or-later.
+Source component: CSmokeTrailProjectile::Draw and ::UpdateEndPos,
+rts/Rendering/Env/Particles/Classes/SmokeTrailProjectile.cpp.
+Translated to SpringSmokeTrail.java on 2026-10-09 for Minecraft/Forge.
+Source width, lifetime and UV mapping are adapted to the host.
+See spring-smoke-GPL-2.0.txt; the original mod's All Rights Reserved
+notice does not replace the license on these third-party components.
+The original C++ and translated Java component are supplied under
+META-INF/sources/spring-smoke/, with full provenance in the project at
+third_party/zerok-smoke/README.md.

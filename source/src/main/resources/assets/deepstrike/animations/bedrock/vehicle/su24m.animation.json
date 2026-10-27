@@ -1,0 +1,148 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.su24m.wings_45": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 1.5,
+      "bones": {
+        "wing_r": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.5": [
+              0,
+              29,
+              0
+            ]
+          }
+        },
+        "wing_l": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.5": [
+              0,
+              -29,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.su24m.wings_69": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 2.0,
+      "bones": {
+        "wing_r": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "2.0": [
+              0,
+              53,
+              0
+            ]
+          }
+        },
+        "wing_l": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "2.0": [
+              0,
+              -53,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.su24m.canopy_open": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 1.5,
+      "bones": {
+        "canopy": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.5": [
+              -32,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.su24m.gear_bind": {
+      "loop": true,
+      "animation_length": 1,
+      "bones": {
+        "gear_nose": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "gear_main_r": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "gear_main_l": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "door_main_r": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "door_main_l": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "door_nose_r": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "door_nose_l": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    }
+  }
+}

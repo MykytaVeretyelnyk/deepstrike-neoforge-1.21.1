@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " N ",
+    "IFI",
+    " E "
+  ],
+  "key": {
+    "N": {
+      "item": "deepstrike:rocket_nose"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "deepstrike:aerodynamic_fins"
+    },
+    "E": {
+      "item": "deepstrike:rocket_engine"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:pac_2"
+  }
+}

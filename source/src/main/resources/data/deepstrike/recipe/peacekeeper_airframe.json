@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BNB",
+    "123",
+    "CRC"
+  ],
+  "key": {
+    "B": {
+      "item": "deepstrike:reentry_bus"
+    },
+    "N": {
+      "item": "deepstrike:rocket_nose"
+    },
+    "1": {
+      "item": "deepstrike:stage_one"
+    },
+    "2": {
+      "item": "deepstrike:stage_two"
+    },
+    "3": {
+      "item": "deepstrike:stage_three"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "R": {
+      "item": "deepstrike:guidance_core"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:peacekeeper_airframe"
+  }
+}

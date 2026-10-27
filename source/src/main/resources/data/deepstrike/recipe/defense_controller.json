@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CRC",
+    "GAG",
+    "CRC"
+  ],
+  "key": {
+    "C": {
+      "item": "deepstrike:control_chip"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "A": {
+      "item": "deepstrike:radar_array"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:defense_controller"
+  }
+}

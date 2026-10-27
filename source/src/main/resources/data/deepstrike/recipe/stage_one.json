@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "ECE",
+    "IFI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "E": {
+      "item": "deepstrike:rocket_engine"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "F": {
+      "item": "deepstrike:steel_frame"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:stage_one"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    "IGI",
+    " I "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:green_dye"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "item": "minecraft:glass_bottle"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:paint_spray"
+  }
+}

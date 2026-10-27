@@ -1,0 +1,34 @@
+{
+  "Skins": [
+    {
+      "Id": "forest",
+      "Name": "Лесной (Forest)",
+      "Texture": "deepstrike:textures/entity/mim_104_patriot_truck_forest.png",
+      "Priority": 1
+    },
+    {
+      "Id": "desert",
+      "Name": "Пустынный (Desert)",
+      "Texture": "deepstrike:textures/entity/mim_104_patriot_truck_desert.png",
+      "Priority": 2
+    },
+    {
+      "Id": "urban",
+      "Name": "Городской (Urban)",
+      "Texture": "deepstrike:textures/entity/mim_104_patriot_truck_urban.png",
+      "Priority": 3
+    },
+    {
+      "Id": "winter",
+      "Name": "Зимний (Winter)",
+      "Texture": "deepstrike:textures/entity/mim_104_patriot_truck_winter.png",
+      "Priority": 4
+    },
+    {
+      "Id": "solid",
+      "Name": "Однотонный (Solid Olive)",
+      "Texture": "deepstrike:textures/entity/mim_104_patriot_truck_solid.png",
+      "Priority": 5
+    }
+  ]
+}

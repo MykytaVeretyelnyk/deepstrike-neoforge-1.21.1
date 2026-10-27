@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.sbw.deepstrike.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ManpadCollisionMixin",
+    "ManpadExplosionMixin",
+    "ManpadTickMixin",
+    "ManpadPositionMixin",
+    "ManpadVelocityMixin",
+    "LauncherShapeBoxesMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "ScreenBackgroundMixin",
+    "ManpadFlareMixin",
+    "MissileCameraInputMixin",
+    "ResponsiveScreenMixin",
+    "ResponsiveMouseMixin",
+    "ResponsiveScissorMixin",
+    "RemoteCameraChunkMixin",
+    "SmokeChunkChangeMixin",
+    "SmokeLauncherDataMixin"
+  ]
+}

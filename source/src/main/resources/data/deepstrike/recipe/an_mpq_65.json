@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GAG",
+    "FCF",
+    "IRI"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "A": {
+      "item": "deepstrike:radar_array"
+    },
+    "F": {
+      "item": "deepstrike:steel_frame"
+    },
+    "C": {
+      "item": "deepstrike:vehicle_chassis"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "R": {
+      "item": "deepstrike:control_chip"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:an_mpq_65"
+  }
+}

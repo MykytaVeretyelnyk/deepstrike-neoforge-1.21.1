@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OGG",
+    "FCF",
+    "ERE"
+  ],
+  "key": {
+    "O": {
+      "item": "deepstrike:optical_seeker"
+    },
+    "G": {
+      "item": "deepstrike:guidance_core"
+    },
+    "F": {
+      "item": "deepstrike:aerodynamic_fins"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "E": {
+      "item": "deepstrike:steel_frame"
+    },
+    "R": {
+      "item": "deepstrike:rocket_engine"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:spike_nlos_airframe"
+  }
+}

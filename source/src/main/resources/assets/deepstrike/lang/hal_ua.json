@@ -1,0 +1,15 @@
+{
+  "screen.deepstrike.map.fullscreen": "Відкрити мапу",
+  "help.deepstrike.control": "Виділений елемент керування. Закрий підказку, щоби ним скористатися.",
+  "help.deepstrike.launch": "Спершу вибери ціль. Ся кнопка запускає ракету.",
+  "help.deepstrike.delete": "Стирає вибраний запис. Перед змінами закрий підказку.",
+  "help.deepstrike.map": "Відкриває мапу Xaero на цілий екран. Перетягуй мапу; коліщатко змінює масштаб.",
+  "help.deepstrike.zone": "Увімкни вибір, відтак натисни на мапу, щоби поставити центр зони.",
+  "help.deepstrike.save": "Зберігає налаштування на сім екрані.",
+  "help.deepstrike.adjust": "Змінює число коло сих кнопок.",
+  "help.deepstrike.hide": "Ховає панелі, щоби було видно цілу мапу. Натисни H, щоби повернути їх.",
+  "help.deepstrike.journal": "Показує події, записані сею установкою.",
+  "help.deepstrike.frequency": "Задає радіочастоти розпізнавання своїх літаків і ракет.",
+  "item.deepstrike.su24m": "Su-24M",
+  "camo.deepstrike.graphite": "Graphite"
+}

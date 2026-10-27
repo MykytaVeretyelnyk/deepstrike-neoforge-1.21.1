@@ -1,0 +1,15 @@
+{
+  "screen.deepstrike.map.fullscreen": "Abrir el mapa",
+  "help.deepstrike.control": "Butón resaltau. Cierra l'ayuda pa usalu.",
+  "help.deepstrike.launch": "Escuegi primero un blancu. Esti butón lanza un misil.",
+  "help.deepstrike.delete": "Borra la entrada escugida. Cierra l'ayuda antis de cambiar na.",
+  "help.deepstrike.map": "Abri el mapa Xaero a pantalla entera. Arrastra pa movelu y usa la ruea del ratón pal zoom.",
+  "help.deepstrike.zone": "Activa la selección y calca nel mapa pa poner el centru de la zona.",
+  "help.deepstrike.save": "Guarda los ajustes d'esta pantalla.",
+  "help.deepstrike.adjust": "Cambia el númiru al lau d'estos butones.",
+  "help.deepstrike.hide": "Escondi los panelis pa ver el mapa enteru. Calca H pa mostralos otra vez.",
+  "help.deepstrike.journal": "Muestra los sucesos apuntaos por esta unidá.",
+  "help.deepstrike.frequency": "Pon las frecuencias de radio pa conocer los avionis y misilis aliaos.",
+  "item.deepstrike.su24m": "Su-24M",
+  "camo.deepstrike.graphite": "Graphite"
+}

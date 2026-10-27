@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    " I ",
+    "ICI"
+  ],
+  "key": {
+    "T": {
+      "item": "minecraft:iron_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "C": {
+      "item": "deepstrike:control_chip"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:rocket_nose"
+  }
+}

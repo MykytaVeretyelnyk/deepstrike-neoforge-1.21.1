@@ -1,0 +1,9 @@
+{
+  "Animation": "deepstrike:animations/bedrock/vehicle/su24m.animation.json",
+  "Models": [
+    {
+      "Model": "deepstrike:models/bedrock/vehicle/su24m.geo.json",
+      "Texture": "deepstrike:textures/bedrock/vehicle/su24m_camo.png"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "level=1": {
+      "model": "deepstrike:block/siren_tower"
+    },
+    "level=2": {
+      "model": "deepstrike:block/siren_tower"
+    }
+  }
+}

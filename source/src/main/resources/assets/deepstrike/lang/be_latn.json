@@ -1,0 +1,15 @@
+{
+  "screen.deepstrike.map.fullscreen": "Adkryć kartu",
+  "help.deepstrike.control": "Vyłučany eliemient kiravannia. Zakryj padkazki, kab skarystacca im.",
+  "help.deepstrike.launch": "Spačatku vybiery cel. Hetaja knopka zapuskaje rakietu.",
+  "help.deepstrike.delete": "Vydaliaje vybrany zapis. Zakryj padkazki pierad zmienami.",
+  "help.deepstrike.map": "Adkryvaje kartu Xaero na ŭvieś ekran. Pieraciahvaj kartu; koła zmianiaje maštab.",
+  "help.deepstrike.zone": "Ukliučy vybar, potym nacisni na kartu, kab zadać centr zony.",
+  "help.deepstrike.save": "Zachoŭvaje nałady hetaha ekrana.",
+  "help.deepstrike.adjust": "Zmianiaje značennie pobač z hetymi knopkami.",
+  "help.deepstrike.hide": "Chavaje paneli. Nacisni H, kab viarnuć ich.",
+  "help.deepstrike.journal": "Pakazvaje padziei, zapisanyja hetaj ustanoŭkaj.",
+  "help.deepstrike.frequency": "Zadaje častoty raspaznavannia svaich. Samalioty i rakiety na hetych častotach paznačajucca jak svaje.",
+  "item.deepstrike.su24m": "Su-24M",
+  "camo.deepstrike.graphite": "Graphite"
+}

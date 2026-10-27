@@ -1,0 +1,15 @@
+{
+  "screen.deepstrike.map.fullscreen": "Opna kortet",
+  "help.deepstrike.control": "Framheva knapp. Lat att hjelpi fyrr du brukar han.",
+  "help.deepstrike.launch": "Vel eit mål fyrst. Denne knappen skyt ut eit missil.",
+  "help.deepstrike.delete": "Slettar den valde posten. Lat att hjelpi fyrr du gjer endringar.",
+  "help.deepstrike.map": "Opnar heile Xaero-kortet. Drag for å flytja kortet, og bruk musehjulet til å zooma.",
+  "help.deepstrike.zone": "Slå på val, og klikk på kortet for å setja midten av sona.",
+  "help.deepstrike.save": "Lagrar innstellingane på denne skjermen.",
+  "help.deepstrike.adjust": "Aukar eller minkar talet attmed desse knappane.",
+  "help.deepstrike.hide": "Gøymer panela, so du ser heile kortet. Trykk H for å syna dei att.",
+  "help.deepstrike.journal": "Syner hendingane som denne einingi hev skrive ned.",
+  "help.deepstrike.frequency": "Set radiofrekvensar til å kjenna att eigne fly og missil.",
+  "item.deepstrike.su24m": "Su-24M",
+  "camo.deepstrike.graphite": "Graphite"
+}

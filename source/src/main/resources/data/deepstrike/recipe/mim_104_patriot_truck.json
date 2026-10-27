@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LAL",
+    "FCF",
+    "IRI"
+  ],
+  "key": {
+    "L": {
+      "item": "deepstrike:launcher_frame"
+    },
+    "A": {
+      "item": "deepstrike:radar_array"
+    },
+    "F": {
+      "item": "deepstrike:steel_frame"
+    },
+    "C": {
+      "item": "deepstrike:vehicle_chassis"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "R": {
+      "item": "deepstrike:defense_controller"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:mim_104_patriot_truck"
+  }
+}

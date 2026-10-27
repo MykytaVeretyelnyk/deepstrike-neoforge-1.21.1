@@ -1,0 +1,8 @@
+{
+  "ID": "deepstrike:mim_104_patriot_truck",
+  "Animation": "deepstrike:animations/mim_104_patriot_truck.animation.json",
+  "Model": {
+    "Model": "deepstrike:geo/mim_104_patriot_truck.geo.json",
+    "Texture": "deepstrike:textures/entity/mim_104_patriot_truck_forest.png"
+  }
+}

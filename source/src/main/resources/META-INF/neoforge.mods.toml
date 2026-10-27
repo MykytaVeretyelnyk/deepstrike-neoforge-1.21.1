@@ -1,0 +1,52 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="All Rights Reserved"
+[[mods]]
+modId="deepstrike"
+version="0.9.0"
+displayName="DeepStrike"
+description='''DeepStrike precision missile strike and launcher systems with Xaero or JourneyMap targeting.'''
+[[mixins]]
+config="deepstrike.mixins.json"
+[[dependencies.deepstrike]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1.0,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.deepstrike]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1,1.21.2)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.deepstrike]]
+    modId="superbwarfare"
+    type="required"
+    versionRange="[0.8.9,)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.deepstrike]]
+    modId="geckolib"
+    type="required"
+    versionRange="[4.5,)"
+    ordering="AFTER"
+    side="BOTH"
+[[dependencies.deepstrike]]
+    modId="xaeroworldmap"
+    type="optional"
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="CLIENT"
+[[dependencies.deepstrike]]
+    modId="xaerominimap"
+    type="optional"
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="CLIENT"
+[[dependencies.deepstrike]]
+    modId="journeymap"
+    type="optional"
+    versionRange="[1.21.1-6.0.0,)"
+    ordering="AFTER"
+    side="CLIENT"

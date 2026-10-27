@@ -1,0 +1,15 @@
+{
+  "screen.deepstrike.map.fullscreen": "Boeka peta",
+  "help.deepstrike.control": "Kontrol jang disorot. Toetoep bantoean oentoek menggoenakannja.",
+  "help.deepstrike.launch": "Pilih target terlebih dahoeloe. Kenop ini meloentjoerkan roedal.",
+  "help.deepstrike.delete": "Menghapoes entri jang dipilih. Toetoep bantoean sebeloem mengoebah data.",
+  "help.deepstrike.map": "Memboeka peta Xaero dalam lajar penoeh. Seret oentoek menggeser dan goenakan roda tetikoes oentoek memperbesar ataoe memperketjil.",
+  "help.deepstrike.zone": "Aktifkan pemilihan, laloe klik peta oentoek menentoekan poesat zona.",
+  "help.deepstrike.save": "Menjimpan pengatoeran pada lajar ini.",
+  "help.deepstrike.adjust": "Mengoebah nilai jang ditampilkan di samping kenop ini.",
+  "help.deepstrike.hide": "Menjemboenjikan panel agar peta terlihat penoeh. Tekan H oentoek menampilkannja kembali.",
+  "help.deepstrike.journal": "Menampilkan kedjadian jang ditjatat oleh oenit ini.",
+  "help.deepstrike.frequency": "Mengatoer frekoeensi identifikasi kawan. Pesawat dan roedal dengan frekoeensi jang tjotjok ditandai sebagai kawan.",
+  "item.deepstrike.su24m": "Su-24M",
+  "camo.deepstrike.graphite": "Graphite"
+}

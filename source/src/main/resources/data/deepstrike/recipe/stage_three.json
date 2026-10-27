@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IFI",
+    "ECE",
+    " G "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "deepstrike:aerodynamic_fins"
+    },
+    "E": {
+      "item": "deepstrike:rocket_engine"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "G": {
+      "item": "deepstrike:guidance_core"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:stage_three"
+  }
+}

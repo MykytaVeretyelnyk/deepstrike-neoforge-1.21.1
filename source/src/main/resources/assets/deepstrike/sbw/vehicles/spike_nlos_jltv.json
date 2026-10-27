@@ -1,0 +1,8 @@
+{
+  "ID": "deepstrike:spike_nlos_jltv",
+  "Animation": "deepstrike:animations/spike_nlos_jltv.animation.json",
+  "Model": {
+    "Model": "deepstrike:geo/spike_nlos_jltv.geo.json",
+    "Texture": "deepstrike:textures/entity/spike_nlos_jltv_sand.png"
+  }
+}

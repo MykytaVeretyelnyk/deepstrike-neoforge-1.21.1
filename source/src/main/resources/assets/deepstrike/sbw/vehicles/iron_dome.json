@@ -1,0 +1,7 @@
+{
+  "ID": "deepstrike:iron_dome",
+  "Model": {
+    "Model": "deepstrike:geo/iron_dome.geo.json",
+    "Texture": "deepstrike:textures/entity/iron_dome_forest.png"
+  }
+}

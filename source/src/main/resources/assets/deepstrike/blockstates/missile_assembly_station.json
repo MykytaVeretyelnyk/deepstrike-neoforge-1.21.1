@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "deepstrike:block/missile_assembly_station" },
+    "facing=east":  { "model": "deepstrike:block/missile_assembly_station", "y": 90 },
+    "facing=south": { "model": "deepstrike:block/missile_assembly_station", "y": 180 },
+    "facing=west":  { "model": "deepstrike:block/missile_assembly_station", "y": 270 }
+  }
+}

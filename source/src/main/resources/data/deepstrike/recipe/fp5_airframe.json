@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " N ",
+    "IFI",
+    "F F"
+  ],
+  "key": {
+    "N": {
+      "item": "deepstrike:rocket_nose"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "deepstrike:steel_frame"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:fp5_airframe"
+  }
+}

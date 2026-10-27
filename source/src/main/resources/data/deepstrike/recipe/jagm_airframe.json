@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " OS",
+    "FCF",
+    " E "
+  ],
+  "key": {
+    "O": {
+      "item": "deepstrike:optical_seeker"
+    },
+    "S": {
+      "item": "deepstrike:steel_frame"
+    },
+    "F": {
+      "item": "deepstrike:aerodynamic_fins"
+    },
+    "C": {
+      "item": "deepstrike:control_chip"
+    },
+    "E": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:jagm_airframe"
+  }
+}

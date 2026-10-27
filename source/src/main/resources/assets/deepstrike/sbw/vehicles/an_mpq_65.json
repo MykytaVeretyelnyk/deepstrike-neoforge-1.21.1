@@ -1,0 +1,7 @@
+{
+  "ID": "deepstrike:an_mpq_65",
+  "Model": {
+    "Model": "deepstrike:geo/an_mpq_65.geo.json",
+    "Texture": "deepstrike:textures/entity/an_mpq_65_forest.png"
+  }
+}

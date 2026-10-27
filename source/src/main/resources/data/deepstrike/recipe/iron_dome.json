@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ADA",
+    "LCL",
+    "IFI"
+  ],
+  "key": {
+    "A": {
+      "item": "deepstrike:radar_array"
+    },
+    "D": {
+      "item": "deepstrike:defense_controller"
+    },
+    "L": {
+      "item": "deepstrike:launcher_frame"
+    },
+    "C": {
+      "item": "deepstrike:vehicle_chassis"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "F": {
+      "item": "deepstrike:steel_frame"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:iron_dome"
+  }
+}

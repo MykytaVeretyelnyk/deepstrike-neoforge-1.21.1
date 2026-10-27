@@ -1,0 +1,418 @@
+{
+  "entity.fp5.explode": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.fp5.explode",
+    "sounds": [
+      "deepstrike:explosion/fp5_explode_1",
+      "deepstrike:explosion/fp5_explode_2",
+      "deepstrike:explosion/fp5_explode_3",
+      "deepstrike:explosion/fp5_explode_4"
+    ]
+  },
+  "entity.fp5.explode_far": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.fp5.explode",
+    "sounds": [
+      "deepstrike:explosion/fp5_far_1",
+      "deepstrike:explosion/fp5_far_2",
+      "deepstrike:explosion/fp5_far_3",
+      "deepstrike:explosion/fp5_far_4"
+    ]
+  },
+  "entity.storm_shadow.explode": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.storm_shadow.explode",
+    "sounds": [
+      "deepstrike:explosion/storm_shadow_explode_1",
+      "deepstrike:explosion/storm_shadow_explode_2",
+      "deepstrike:explosion/storm_shadow_explode_3",
+      "deepstrike:explosion/storm_shadow_explode_4"
+    ]
+  },
+  "entity.storm_shadow.explode_far": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.storm_shadow.explode",
+    "sounds": [
+      "deepstrike:explosion/storm_shadow_far_1",
+      "deepstrike:explosion/storm_shadow_far_2",
+      "deepstrike:explosion/storm_shadow_far_3",
+      "deepstrike:explosion/storm_shadow_far_4"
+    ]
+  },
+  "entity.jagm.explode": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.jagm.explode",
+    "sounds": [
+      "deepstrike:explosion/jagm_explode_1",
+      "deepstrike:explosion/jagm_explode_2",
+      "deepstrike:explosion/jagm_explode_3",
+      "deepstrike:explosion/jagm_explode_4"
+    ]
+  },
+  "entity.jagm.explode_far": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.jagm.explode",
+    "sounds": [
+      "deepstrike:explosion/jagm_far_1",
+      "deepstrike:explosion/jagm_far_2",
+      "deepstrike:explosion/jagm_far_3",
+      "deepstrike:explosion/jagm_far_4"
+    ]
+  },
+  "entity.fp5.launch": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.fp5.launch",
+    "sounds": [
+      "deepstrike:launch/fp5_launch"
+    ]
+  },
+  "entity.storm_shadow.launch": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.storm_shadow.launch",
+    "sounds": [
+      "deepstrike:launch/storm_shadow_launch"
+    ]
+  },
+  "entity.jagm.launch": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.jagm.launch",
+    "sounds": [
+      "deepstrike:launch/jagm_launch"
+    ]
+  },
+  "entity.missile.launch_echo": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.missile.launch_echo",
+    "sounds": [
+      "deepstrike:launch/launch_echo"
+    ]
+  },
+  "entity.missile.flight_loop": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.missile.flight",
+    "sounds": [
+      {
+        "name": "deepstrike:flight/flight_loop",
+        "stream": false
+      }
+    ]
+  },
+  "entity.missile.whistle_flyby": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.missile.whistle",
+    "sounds": [
+      "deepstrike:flight/whistle_flyby"
+    ]
+  },
+  "entity.missile.sonic_boom_single": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.missile.sonic_boom",
+    "sounds": [
+      "deepstrike:sonic/sonic_boom_single"
+    ]
+  },
+  "entity.missile.sonic_boom_double": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.missile.sonic_boom",
+    "sounds": [
+      "deepstrike:sonic/sonic_boom_double"
+    ]
+  },
+  "entity.missile.ear_ringing": {
+    "category": "master",
+    "subtitle": "subtitles.entity.missile.ear_ringing",
+    "sounds": [
+      {
+        "name": "deepstrike:sonic/ear_ringing",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.pac3_impact": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.pac3_impact",
+    "sounds": [
+      {
+        "name": "deepstrike:intercept/pac3",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 480
+      }
+    ]
+  },
+  "entity.interceptor.pac2_burst": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.pac2_burst",
+    "sounds": [
+      {
+        "name": "deepstrike:intercept/pac2",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 480
+      }
+    ]
+  },
+  "entity.interceptor.launch": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.launch",
+    "sounds": [
+      {
+        "name": "deepstrike:launch/sam_launch_close_1",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 420
+      },
+      {
+        "name": "deepstrike:launch/sam_launch_close_2",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 420
+      }
+    ]
+  },
+  "entity.interceptor.launch_close": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.launch",
+    "sounds": [
+      {
+        "name": "deepstrike:launch/sam_launch_close_1",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:launch/sam_launch_close_2",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.launch_mid": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.launch",
+    "sounds": [
+      {
+        "name": "deepstrike:launch/sam_launch_mid_1",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:launch/sam_launch_mid_2",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.launch_far": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.launch",
+    "sounds": [
+      {
+        "name": "deepstrike:launch/sam_launch_far_1",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:launch/sam_launch_far_2",
+        "stream": false
+      }
+    ]
+  },
+  "entity.missile.launch_mid": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.fp5.launch",
+    "sounds": [
+      {
+        "name": "deepstrike:launch/heavy_launch_mid",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:launch/sam_launch_mid_2",
+        "stream": false
+      }
+    ]
+  },
+  "entity.missile.launch_far": {
+    "category": "neutral",
+    "subtitle": "subtitles.entity.missile.launch_echo",
+    "sounds": [
+      {
+        "name": "deepstrike:launch/heavy_launch_far",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:launch/launch_echo",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.flight_loop": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.missile.flight",
+    "sounds": [
+      {
+        "name": "deepstrike:flight/sam_flight_loop",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.avenger": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.avenger",
+    "sounds": [
+      {
+        "name": "deepstrike:intercept/avenger",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 360
+      }
+    ]
+  },
+  "entity.interceptor.iron_dome": {
+    "category": "hostile",
+    "subtitle": "subtitles.entity.interceptor.iron_dome",
+    "sounds": [
+      {
+        "name": "deepstrike:intercept/iron_dome",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 420
+      }
+    ]
+  },
+  "block.siren.basic_1": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.basic_1",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/basic_1",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.basic_2": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.basic_2",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/basic_2",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.basic_3": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.basic_3",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/basic_3",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.advanced_1": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.advanced_1",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/advanced_1",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.advanced_2": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.advanced_2",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/advanced_2",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.advanced_3": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.advanced_3",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/advanced_3",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.tower_1": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.tower_1",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/tower_1",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.tower_2": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.tower_2",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/tower_2",
+        "stream": false
+      }
+    ]
+  },
+  "block.siren.tower_3": {
+    "category": "block",
+    "subtitle": "subtitles.block.siren.tower_3",
+    "sounds": [
+      {
+        "name": "deepstrike:siren/tower_3",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.recorded_near": {
+    "sounds": [
+      {
+        "name": "deepstrike:intercept/recorded_near",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:intercept/recorded_near_2",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.recorded_mid": {
+    "sounds": [
+      {
+        "name": "deepstrike:intercept/recorded_mid",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:intercept/recorded_mid_2",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:intercept/recorded_mid_3",
+        "stream": false
+      }
+    ]
+  },
+  "entity.interceptor.recorded_far": {
+    "sounds": [
+      {
+        "name": "deepstrike:intercept/recorded_far",
+        "stream": false
+      },
+      {
+        "name": "deepstrike:intercept/recorded_far_2",
+        "stream": false
+      }
+    ]
+  },
+  "vehicle.su24m.gsh6_23_fire": {
+    "category": "player",
+    "subtitle": "subtitles.weapon.deepstrike.gsh6_23",
+    "sounds": [
+      {
+        "name": "deepstrike:vehicle/su24m/gsh6_23_fire",
+        "stream": true,
+        "attenuation_distance": 512
+      }
+    ]
+  }
+}

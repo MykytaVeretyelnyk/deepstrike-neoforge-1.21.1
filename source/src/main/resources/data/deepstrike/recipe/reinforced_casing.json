@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ISI",
+    "SFS",
+    "ISI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone"
+    },
+    "F": {
+      "item": "deepstrike:steel_frame"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:reinforced_casing"
+  }
+}

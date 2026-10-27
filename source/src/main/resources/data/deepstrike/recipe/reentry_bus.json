@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " N ",
+    "GCG",
+    "IRI"
+  ],
+  "key": {
+    "N": {
+      "item": "deepstrike:rocket_nose"
+    },
+    "G": {
+      "item": "deepstrike:guidance_core"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:reentry_bus"
+  }
+}

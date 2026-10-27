@@ -1,0 +1,47 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = '0.9.0-neoforge-1.21.1'
+group = 'dev.sbw.deepstrike'
+base { archivesName = 'dsm' }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = '21.1.265'
+    mods {
+        deepstrike { sourceSet sourceSets.main }
+    }
+    runs {
+        gts {
+            type = 'gameTestServer'
+            gameDirectory = project.file('run-gts')
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'deepstrike'
+        }
+    }
+}
+
+repositories {
+    flatDir { dirs '../libs' }
+}
+
+dependencies {
+    runtimeOnly files('../libs/superbwarfare-0.8.9.2-mc1.21.1-c22d98c2.jar')
+    runtimeOnly files('../libs/geckolib-neoforge-1.21.1-4.9.3.jar')
+    runtimeOnly files('../libs/kotlinforforge-5.12.0-all.jar')
+    compileOnly files('../libs/superbwarfare-0.8.9.2-mc1.21.1-c22d98c2.jar')
+    compileOnly files('../libs/geckolib-neoforge-1.21.1-4.9.3.jar')
+    compileOnly files('../libs/xaerominimap-neoforge-1.21.1-26.6.0.jar')
+    compileOnly files('../libs/xaeroworldmap.jar')
+    compileOnly files('../libs/SimpleBedrockModel-2.5.1.1-neoforge-mc1.21.1.jar')
+    compileOnly files('../libs/mae-1.1.4.jar')
+    compileOnly files('../libs/xaerolib-neoforge-1.21.1-1.7.3.jar')
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xmaxerrs' << '10000'
+}
+

@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " NG",
+    "FCF",
+    "EIE"
+  ],
+  "key": {
+    "N": {
+      "item": "deepstrike:rocket_nose"
+    },
+    "G": {
+      "item": "deepstrike:guidance_core"
+    },
+    "F": {
+      "item": "deepstrike:aerodynamic_fins"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "E": {
+      "item": "deepstrike:steel_frame"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:storm_shadow_airframe"
+  }
+}

@@ -1,0 +1,8 @@
+Wildfire Games / 0 A.D. particle shader port, GPL-2.0-or-later.
+Source commit: 61a3b9507d974084e6badb88a0826bd89a6d5b8b
+Original: binaries/data/mods/mod/shaders/glsl/particle.fs
+Attribution: Wildfire Games, https://www.wildfiregames.com/
+Original files, licensing declaration and modified shader are included in
+META-INF/sources/0ad-smoke. GPL text: spring-smoke-GPL-2.0.txt.
+Modifications: GLSL 150 and Forge bindings; neutral sun colour; no RTS LOS/fog.
+Texture smoke_128d_light.png remains CC BY-SA 3.0 (see 0ad-smoke-NOTICE.txt).

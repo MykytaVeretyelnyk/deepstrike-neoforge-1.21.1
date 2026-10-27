@@ -1,0 +1,288 @@
+{
+  "ID": "deepstrike:spike_nlos_jltv",
+  "Type": "Car",
+  "MaxHealth": 300,
+  "MaxEnergy": 5000000,
+  "Mass": 8.1,
+  "UpStep": 1.05,
+  "RotateOffsetHeight": 1.3,
+  "OBB": [
+    {
+      "Part": "Collision",
+      "Size": [
+        1.46,
+        1.66,
+        3.18
+      ],
+      "Position": [
+        0,
+        1.66,
+        0
+      ]
+    },
+    {
+      "Size": [
+        1.1,
+        0.73,
+        1.0
+      ],
+      "Position": [
+        0,
+        2.55,
+        0.45
+      ]
+    },
+    {
+      "Size": [
+        0.76,
+        1.26,
+        1.1
+      ],
+      "Position": [
+        0,
+        3.2,
+        -1.8
+      ]
+    },
+    {
+      "Size": [
+        0.26,
+        0.663,
+        0.663
+      ],
+      "Position": [
+        -1.1875,
+        0.694,
+        -2
+      ],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [
+        0.26,
+        0.663,
+        0.663
+      ],
+      "Position": [
+        -1.1875,
+        0.694,
+        1.875
+      ],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [
+        0.26,
+        0.663,
+        0.663
+      ],
+      "Position": [
+        1.1875,
+        0.694,
+        -2
+      ],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [
+        0.26,
+        0.663,
+        0.663
+      ],
+      "Position": [
+        1.1875,
+        0.694,
+        1.875
+      ],
+      "Part": "WheelLeft"
+    }
+  ],
+  "Seats": [
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [
+        0.5,
+        1.0875,
+        0
+      ],
+      "MinPitch": -85,
+      "MaxPitch": 85,
+      "MinYaw": -160,
+      "MaxYaw": 160,
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "Position": [
+          0.5,
+          2.7,
+          0.28
+        ],
+        "UseFixedCameraPos": true
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [
+          2.0,
+          0.1,
+          0
+        ]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [
+        -0.5,
+        1.0875,
+        0
+      ],
+      "MinPitch": -85,
+      "MaxPitch": 85,
+      "MinYaw": -160,
+      "MaxYaw": 160,
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "Position": [
+          -0.5,
+          2.7,
+          0.28
+        ],
+        "UseFixedCameraPos": true
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [
+          -2.0,
+          0.1,
+          0
+        ]
+      }
+    }
+  ],
+  "TurretPos": [
+    0,
+    1.75,
+    -1.81
+  ],
+  "TurretTurnSpeed": [
+    25,
+    25
+  ],
+  "TurretPitchRange": [
+    -10,
+    70
+  ],
+  "BarrelPos": [
+    0,
+    0.89,
+    0
+  ],
+  "EngineType": "Wheel",
+  "EngineInfo": {
+    "Buoyancy": 0.0,
+    "EnergyCostRate": 64,
+    "WheelRotSpeed": 0.75,
+    "WheelDifferential": 0.38,
+    "MaxForwardSpeedRate": 0.8,
+    "MaxBackwardSpeedRate": 0.38,
+    "Increment": 0.019,
+    "Decrement": 0.028,
+    "SteeringSpeed": 0.045,
+    "EngineSoundVolume": 0.7
+  },
+  "EngineSound": "superbwarfare:truck_engine",
+  "HornSound": "superbwarfare:truck_horn",
+  "DamageModifiers": [
+    "minecraft:lava - -11",
+    "minecraft:lava * 10",
+    "All * 0.2",
+    "minecraft:arrow * 1.5",
+    "minecraft:trident * 1.5",
+    "minecraft:mob_attack * 2.5",
+    "minecraft:mob_attack_no_aggro * 2",
+    "minecraft:mob_projectile * 1.5",
+    "minecraft:explosion * 6",
+    "minecraft:player_explosion * 6",
+    "superbwarfare:custom_explosion * 2.0",
+    "superbwarfare:projectile_explosion * 2",
+    "superbwarfare:mine * 0.75",
+    "superbwarfare:projectile_hit * 1.25",
+    "superbwarfare:grapeshot_hit * 0.3",
+    "superbwarfare:laser * 1.25",
+    "@#superbwarfare:aerial_bomb * 3",
+    "#superbwarfare:projectile * 0.25",
+    "#superbwarfare:projectile_absolute * 0.85",
+    "superbwarfare:vehicle_strike * 4",
+    "@superbwarfare:mortar_shell * 1.25",
+    "@superbwarfare:gun_grenade * 1.5",
+    "@superbwarfare:javelin_missile * 0.8",
+    "@#superbwarfare:aa_missile * 0.75",
+    "All - 11"
+  ],
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 45,
+    "ExplosionRadius": 5
+  },
+  "CollisionLevel": {
+    "Level": 4,
+    "PowerLimits": [
+      [
+        0,
+        0,
+        true
+      ],
+      [
+        0,
+        0,
+        true
+      ],
+      [
+        0.15,
+        0.09,
+        false
+      ],
+      [
+        1,
+        0.3,
+        false
+      ]
+    ]
+  },
+  "TerrainCompat": [
+    [
+      -1.1875,
+      0,
+      -2
+    ],
+    [
+      -1.1875,
+      0,
+      1.875
+    ],
+    [
+      1.1875,
+      0,
+      -2
+    ],
+    [
+      1.1875,
+      0,
+      1.875
+    ]
+  ],
+  "InertiaRotateRate": 0.3,
+  "HasDecoy": false,
+  "ThirdPersonCameraPos": [
+    0,
+    0.75,
+    5.5
+  ],
+  "HudType": "@Land",
+  "HUDColor": "0x66FF77",
+  "VehicleIcon": "deepstrike:textures/vehicle_icon/spike_nlos_jltv.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
+  "VehicleContainerType": "Medium",
+  "TurretControllerIndex": -1,
+  "Weapons": {}
+}

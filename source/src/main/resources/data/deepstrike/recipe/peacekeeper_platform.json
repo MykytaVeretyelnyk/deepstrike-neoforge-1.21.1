@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ILI",
+    "FCF",
+    "SSS"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "L": {
+      "item": "deepstrike:launcher_frame"
+    },
+    "F": {
+      "item": "deepstrike:steel_frame"
+    },
+    "C": {
+      "item": "deepstrike:defense_controller"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:peacekeeper_platform"
+  }
+}

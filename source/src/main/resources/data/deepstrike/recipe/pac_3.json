@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " O ",
+    "FCF",
+    " E "
+  ],
+  "key": {
+    "O": {
+      "item": "deepstrike:optical_seeker"
+    },
+    "F": {
+      "item": "deepstrike:aerodynamic_fins"
+    },
+    "C": {
+      "item": "deepstrike:reinforced_casing"
+    },
+    "E": {
+      "item": "deepstrike:rocket_engine"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:pac_3"
+  }
+}

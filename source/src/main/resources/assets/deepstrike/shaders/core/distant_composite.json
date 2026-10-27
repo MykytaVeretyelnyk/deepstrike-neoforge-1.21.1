@@ -1,0 +1,59 @@
+{
+  "vertex": "deepstrike:distant_composite",
+  "fragment": "deepstrike:distant_composite",
+  "attributes": [
+    "Position",
+    "UV0"
+  ],
+  "samplers": [
+    {
+      "name": "Sampler0"
+    },
+    {
+      "name": "Sampler1"
+    }
+  ],
+  "uniforms": [
+    {
+      "name": "LocalDepth",
+      "type": "float",
+      "count": 2,
+      "values": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "WorldDepth",
+      "type": "float",
+      "count": 2,
+      "values": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "DistanceScale",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1
+      ]
+    },
+    {
+      "name": "Visibility",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    }
+  ],
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "one_minus_src_alpha",
+    "srcalpha": "one",
+    "dstalpha": "one_minus_src_alpha"
+  }
+}

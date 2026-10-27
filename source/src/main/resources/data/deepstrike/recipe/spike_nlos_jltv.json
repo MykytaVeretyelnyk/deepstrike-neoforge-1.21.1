@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "FCF",
+    "IRI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "F": {
+      "item": "deepstrike:launcher_frame"
+    },
+    "C": {
+      "item": "deepstrike:vehicle_chassis"
+    },
+    "R": {
+      "item": "deepstrike:control_chip"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:spike_nlos_jltv"
+  }
+}

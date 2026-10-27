@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    " F ",
+    "   "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:black_dye"
+    },
+    "F": {
+      "item": "deepstrike:fp5_launcher"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "deepstrike:fp5_launcher_graphite"
+  }
+}

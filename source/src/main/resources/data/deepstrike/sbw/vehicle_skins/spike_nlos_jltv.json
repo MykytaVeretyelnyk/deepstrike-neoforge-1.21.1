@@ -1,0 +1,22 @@
+{
+  "Skins": [
+    {
+      "Id": "sand",
+      "Name": "Песочный",
+      "Texture": "deepstrike:textures/entity/spike_nlos_jltv_sand.png",
+      "Priority": 1
+    },
+    {
+      "Id": "green",
+      "Name": "Зелёный",
+      "Texture": "deepstrike:textures/entity/spike_nlos_jltv_green.png",
+      "Priority": 2
+    },
+    {
+      "Id": "multicam",
+      "Name": "Мультикам",
+      "Texture": "deepstrike:textures/entity/spike_nlos_jltv_multicam.png",
+      "Priority": 3
+    }
+  ]
+}

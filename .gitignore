@@ -1,0 +1,15 @@
+# local toolchain and third-party jars
+tools/
+libs/
+# build output and caches
+source/build/
+source/.gradle/
+source/run/
+source/runs/
+.gradle/
+*.log
+# screenshots
+Screenshot*.png
+# local Claude settings
+.claude/settings.local.json
+__pycache__/

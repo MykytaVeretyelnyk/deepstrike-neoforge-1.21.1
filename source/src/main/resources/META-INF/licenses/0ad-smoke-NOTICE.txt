@@ -1,0 +1,14 @@
+# 0 A.D. smoke texture
+
+Copyright (C) Wildfire Games, https://www.wildfiregames.com/ .
+CC BY-SA 3.0: https://creativecommons.org/licenses/by-sa/3.0/
+
+Source: https://github.com/0ad/0ad/blob/61a3b9507d974084e6badb88a0826bd89a6d5b8b/binaries/data/mods/public/art/textures/particles/smoke_128d_light.png
+
+Original PNG copied byte-for-byte as assets/deepstrike/textures/particle/ported/smoke_light.png. The source texture and any modified texture derivatives retain CC BY-SA 3.0. Runtime material changes: white-grey tonal range, overlapping samples, density adjustment. No claim that the complete missile effect is an unchanged 0 A.D. effect.
+
+SHA256: 160d83189268b2a246a4eed95897a6c338e6b3364caa30b95b16aba780998096
+
+Original cloud_1_512.png (512x512), Wildfire Games, CC BY-SA 3.0.
+Source: https://github.com/0ad/0ad/blob/61a3b9507d974084e6badb88a0826bd89a6d5b8b/binaries/data/mods/public/art/textures/particles/cloud_1_512.png
+Imported without pixel changes for the flight-wake dense layer.
