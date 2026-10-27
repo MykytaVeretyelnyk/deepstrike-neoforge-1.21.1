@@ -1,5 +1,7 @@
 package dev.sbw.deepstrike.game;
 
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import dev.sbw.deepstrike.network.PatriotDefenseNetwork;
 import java.util.Locale;
 import net.minecraft.core.registries.Registries;
@@ -54,6 +56,17 @@ public final class InterceptionEffects {
             || className.contains("igla")
             || className.contains("fim92")
             || className.contains("fim_92");
+      }
+   }
+
+   // Automatic gun mounts (SBW AA vehicles and CIWS turrets) get a small per-hit chance to shoot a missile down.
+   public static boolean isAutoCannon(Entity attacker) {
+      if (!(attacker instanceof VehicleEntity vehicle)) {
+         return false;
+      } else {
+         String name = id(attacker);
+         VehicleType type = vehicle.getVehicleType();
+         return name.contains("hpj_11") || name.contains("ciws") || type == VehicleType.AA || type == VehicleType.DEFENSE;
       }
    }
 

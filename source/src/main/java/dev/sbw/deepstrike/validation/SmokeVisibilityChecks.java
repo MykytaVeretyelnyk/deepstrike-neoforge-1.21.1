@@ -17,16 +17,18 @@ public final class SmokeVisibilityChecks {
          }
       }
 
-      if (SmokeVisibility.opacity(1500.0, 20.0) != 0.0F) {
-         throw new AssertionError("Low launch smoke visible at 1.5km cutoff");
-      } else if (SmokeVisibility.opacity(1500.0, 500.0) != 0.0F) {
-         throw new AssertionError("High wake visible at 1.5km cutoff");
-      } else if (SmokeVisibility.opacity(3000.0, 500.0) != 0.0F) {
-         throw new AssertionError("High wake visible at 3km");
-      } else if (SmokeVisibility.opacity(3000.0, 20.0) != 0.0F) {
-         throw new AssertionError("Low launch smoke visible at 3km");
-      } else if (SmokeVisibility.opacity(500.0, 500.0) < 0.3F) {
+      if (SmokeVisibility.opacity(SmokeVisibility.MAX_SMOKE_DISTANCE, 20.0) != 0.0F) {
+         throw new AssertionError("Low launch smoke visible at the cutoff");
+      } else if (SmokeVisibility.opacity(SmokeVisibility.MAX_SMOKE_DISTANCE, 500.0) != 0.0F) {
+         throw new AssertionError("High wake visible at the cutoff");
+      } else if (SmokeVisibility.opacity(4500.0, 500.0) != 0.0F) {
+         throw new AssertionError("High wake visible far past the cutoff");
+      } else if (SmokeVisibility.opacity(1000.0, 500.0) < 0.5F) {
          throw new AssertionError("Mid-range smoke too faint");
+      } else if (SmokeVisibility.opacity(300.0, 0.0) != 1.0F) {
+         throw new AssertionError("Near smoke should be fully opaque");
+      } else if (SmokeVisibility.distanceScale(100.0) != 1.0 || SmokeVisibility.distanceScale(2000.0) <= 1.0 || SmokeVisibility.distanceScale(9000.0) > 4.0) {
+         throw new AssertionError("Distance scale out of range");
       } else {
          float previous = 0.0F;
 
@@ -39,7 +41,7 @@ public final class SmokeVisibilityChecks {
             previous = value;
          }
 
-         System.out.println("SMOKE_VISIBILITY_PASS distanceMonotonic=true heightMonotonic=true cutoff1500=true zero3km=true");
+         System.out.println("SMOKE_VISIBILITY_PASS distanceMonotonic=true heightMonotonic=true cutoff3000=true");
       }
    }
 }

@@ -70,6 +70,8 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
    private final Map<UUID, IronDomeNetwork.Contact> cachedContacts = new HashMap<>();
    private long nextScanTick = 0L;
    private boolean aircraftTargets;
+   // The zone defaults are captured before the entity has a position; centre it on the battery once placed.
+   private boolean zoneInitialized;
    private List<String> friendlyFrequencies = List.of();
    private ChunkPos defenseChunk;
 
@@ -261,6 +263,7 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
          this.entityData.set(ZONE_X, (float)x);
          this.entityData.set(ZONE_Z, (float)z);
          this.entityData.set(ZONE_RADIUS, (float)Math.max(100.0, Math.min(4500.0, radius)));
+         this.zoneInitialized = true;
       }
    }
 
@@ -458,6 +461,10 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
    public void tick() {
       super.tick();
       if (this.level() instanceof ServerLevel server) {
+         if (!this.zoneInitialized) {
+            this.setDefendedZone(this.getX(), this.getZ(), this.getZoneRadius());
+         }
+
          this.refreshInventory();
          this.handleReloading();
          IronDomeDefenseCoordinator.tick(server);
@@ -593,6 +600,9 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
       if (tag.contains("ZoneRadius")) {
          this.entityData.set(ZONE_RADIUS, tag.getFloat("ZoneRadius"));
       }
+
+      // Batteries saved before the fix kept the unplaced default of world origin (0, 0).
+      this.zoneInitialized = tag.contains("ZoneX") && (tag.getFloat("ZoneX") != 0.0F || tag.getFloat("ZoneZ") != 0.0F);
 
       if (tag.contains("AutoDefense")) {
          this.entityData.set(AUTO_DEFENSE, tag.getBoolean("AutoDefense"));

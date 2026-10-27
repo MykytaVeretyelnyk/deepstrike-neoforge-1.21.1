@@ -1369,10 +1369,15 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
          Entity direct = source.getDirectEntity();
          Entity attacker = source.getEntity();
          int defense = InterceptionEffects.defenseOf(direct, attacker);
+         boolean autoCannon = defense < 0 && InterceptionEffects.isAutoCannon(attacker);
+         if (autoCannon) {
+            defense = 2;
+         }
+
          if (defense >= 0 && this.level() instanceof ServerLevel server) {
             double speedKmh = FlightUnits.kilometresPerHour(this.getDeltaMovement().length());
-            double chance = calculateIglaHitChance(this.getY(), speedKmh);
-            if (defense == 2) {
+            double chance = autoCannon ? 0.08 : calculateIglaHitChance(this.getY(), speedKmh);
+            if (defense == 2 && !autoCannon) {
                chance = Math.min(0.65, chance + 0.08);
             }
 

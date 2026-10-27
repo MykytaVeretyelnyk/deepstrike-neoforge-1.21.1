@@ -185,7 +185,8 @@ public final class SmokeFlow {
          return false;
       } else {
          ChunkPos position = mc.player.chunkPosition();
-         int reach = (Integer)mc.options.renderDistance().get() + 2;
+         // Chunks past the render distance are never sent; treating them as solid cuts smoke along an invisible wall.
+         int reach = (Integer)mc.options.renderDistance().get();
          return Math.abs(chunkX - position.x) > reach || Math.abs(chunkZ - position.z) > reach;
       }
    }

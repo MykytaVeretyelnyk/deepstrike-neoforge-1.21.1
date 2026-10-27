@@ -409,10 +409,14 @@ public final class PatriotRemoteEffects {
          long started = effectTicks;
          double soundSpeed = Atmosphere.soundSpeed((position.y + Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().y) * 0.5);
 
+         // A burst a few blocks wide is a speck from 200+ blocks away; grow it with distance so the kill stays readable.
+         double burstDistance = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceTo(position);
+         float boost = (float)Mth.clamp(burstDistance / 35.0, 1.0, 10.0);
+
          for (int i = 0; i < lobes.size(); i++) {
             PatriotRemoteEffects.PuffLobe lobe = lobes.get(i);
             Vec3 offset = new Vec3(lobe.ox, lobe.oy, lobe.oz);
-            ContrailRenderer.emitSmoke(position.add(offset), offset.scale(2.35), lobe.size * 0.24F, i);
+            ContrailRenderer.emitSmoke(position.add(offset.scale(boost)), offset.scale(2.35 * boost), lobe.size * 0.24F * boost * 0.7F, i);
          }
 
          int ringCount = defense != 0 && defense != 3 ? 10 : 14;
@@ -420,15 +424,20 @@ public final class PatriotRemoteEffects {
          for (int i = 0; i < ringCount; i++) {
             double a = (i + random.nextDouble() * 0.4) * ((Math.PI * 2) / ringCount);
             Vec3 ringDir = new Vec3(Math.cos(a), (random.nextDouble() - 0.5) * 0.28, Math.sin(a)).normalize();
-            ContrailRenderer.emitBlastWave(position.add(ringDir.scale(radius * 0.8)), ringDir.scale(7.5 * radius), radius * 0.34F, i * 19 + defense);
+            ContrailRenderer.emitBlastWave(
+               position.add(ringDir.scale(radius * 0.8 * boost)), ringDir.scale(7.5 * radius * boost), radius * 0.34F * Math.min(boost, 6.0F), i * 19 + defense
+            );
          }
+
+         // Lingering marker puff: hangs where the missile died for ~20 s so the interception can be found afterwards.
+         ContrailRenderer.emitSmoke(position, new Vec3(0.0, 0.02, 0.0), (0.45F + radius * 0.35F) * boost, 1000 + defense);
          float flashRadius = switch (defense) {
             case 0 -> 42.0F;
             case 1 -> 28.0F;
             default -> 24.0F;
             case 3 -> 36.0F;
          };
-         FlightLighting.flash(position, flashRadius, 30);
+         FlightLighting.flash(position, flashRadius * Math.min(2.0F, 1.0F + boost * 0.12F), 30);
          BURSTS.add(new PatriotRemoteEffects.Burst(position, started, defense, List.copyOf(sparks), List.of(), soundSpeed));
       }
    }

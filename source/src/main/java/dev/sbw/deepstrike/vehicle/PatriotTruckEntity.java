@@ -340,10 +340,11 @@ public class PatriotTruckEntity extends DeepStrikeVehicleEntity {
                      );
                   }
 
-                  if (radar != null) {
+                  if (radar != null && tag.getLong("TargetPosition") != radar.blockPosition().asLong()) {
                      tag.putLong("TargetPosition", radar.blockPosition().asLong());
                      tag.putInt("TargetChunkX", radar.chunkPosition().x);
                      tag.putInt("TargetChunkZ", radar.chunkPosition().z);
+                     NbtCompat.setTag(stack, tag);
                   }
 
                   if ("Iron Dome".equals(tag.getString("TargetName")) && !runtime.destroyed(tag.getUUID("TargetUUID"))) {

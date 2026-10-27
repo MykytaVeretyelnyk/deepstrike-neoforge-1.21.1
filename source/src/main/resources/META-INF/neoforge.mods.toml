@@ -8,6 +8,8 @@ displayName="DeepStrike"
 description='''DeepStrike precision missile strike and launcher systems with Xaero or JourneyMap targeting.'''
 [[mixins]]
 config="deepstrike.mixins.json"
+[[mixins]]
+config="deepstrike.compat.mixins.json"
 [[dependencies.deepstrike]]
     modId="neoforge"
     type="required"

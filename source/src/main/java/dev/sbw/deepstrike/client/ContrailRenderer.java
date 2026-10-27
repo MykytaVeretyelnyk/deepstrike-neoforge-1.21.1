@@ -10,6 +10,7 @@ import dev.sbw.deepstrike.game.GuidedMissileEntity;
 import dev.sbw.deepstrike.game.InterceptionEffects;
 import dev.sbw.deepstrike.game.MissileKind;
 import dev.sbw.deepstrike.game.PatriotInterceptorEntity;
+import dev.sbw.deepstrike.game.SmokeVisibility;
 import dev.sbw.deepstrike.model.FlightOrientation;
 import dev.sbw.deepstrike.model.InterceptorGeometry;
 import dev.sbw.deepstrike.model.ManpadGeometry;
@@ -289,7 +290,7 @@ public final class ContrailRenderer {
       if (ensureWorld() && Double.isFinite(position.lengthSqr())) {
          if (!Boolean.getBoolean("deepstrike.fp5Review") && !Boolean.getBoolean("deepstrike.installedSmokeReview")) {
             Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-            if (camPos == null || !(position.distanceTo(camPos) >= 1500.0)) {
+            if (camPos == null || !(position.distanceTo(camPos) >= SmokeVisibility.MAX_SMOKE_DISTANCE)) {
                Vec3 dir = launchDirection != null && launchDirection.lengthSqr() > 1.0E-6 ? launchDirection.normalize() : new Vec3(0.0, 1.0, 0.0);
                Vec3 back = dir.scale(-1.0);
                Vec3 right = perpendicular(dir, null);
@@ -316,7 +317,7 @@ public final class ContrailRenderer {
    public static void smokeColumn(Vec3 position, float scale, int seed, boolean main) {
       if (ensureWorld() && Double.isFinite(position.lengthSqr())) {
          Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-         if (camPos == null || !(position.distanceTo(camPos) >= 1500.0)) {
+         if (camPos == null || !(position.distanceTo(camPos) >= SmokeVisibility.MAX_SMOKE_DISTANCE)) {
             for (ContrailRenderer.ColumnSource source : COLUMNS) {
                if (source.main == main && source.position.distanceToSqr(position) < (main ? 64 : 9)) {
                   if (!main) {
@@ -390,7 +391,7 @@ public final class ContrailRenderer {
 
       for (ContrailRenderer.ColumnPuff column : COLUMN_PUFFS) {
          ContrailRenderer.Sample p = column.sample;
-         if (!(p.position().distanceTo(camera) >= 1500.0)) {
+         if (!(p.position().distanceTo(camera) >= SmokeVisibility.MAX_SMOKE_DISTANCE)) {
             float seconds = (float)((now - p.born) * 0.05);
             double riseSpeed = column.main ? 2.6 : 2.0;
             double height = Math.max(0.0, column.ceiling - p.origin.y);
@@ -853,7 +854,7 @@ public final class ContrailRenderer {
          ContrailRenderer.Sample b = points.get(i);
          double distA = a.position().distanceTo(camera);
          double distB = b.position().distanceTo(camera);
-         if (!(distA >= 1500.0) || !(distB >= 1500.0)) {
+         if (!(distA >= SmokeVisibility.MAX_SMOKE_DISTANCE) || !(distB >= SmokeVisibility.MAX_SMOKE_DISTANCE)) {
             double radius = Math.max(a.radius, b.radius) * 1.3;
             float olderAlpha = i == start + 1 ? 0.0F : ribbonAlpha(a) * trailVisibility(trail, a, camera);
             float newerAlpha = ribbonAlpha(b) * trailVisibility(trail, b, camera);
@@ -985,7 +986,7 @@ public final class ContrailRenderer {
       }
 
       double dist = p.position().distanceTo(camera);
-      return dist >= 1500.0 ? 0.0F : MissileVisibility.trailOpacity(p.position(), dist, trail.terrainReference);
+      return dist >= SmokeVisibility.MAX_SMOKE_DISTANCE ? 0.0F : MissileVisibility.trailOpacity(p.position(), dist, trail.terrainReference);
    }
 
    private static void drawWisp(
@@ -1005,14 +1006,10 @@ public final class ContrailRenderer {
       if (!(p.alpha < 1.0E-4) && (p.hotJet || freshCore || !(p.ageSeconds < 0.025F))) {
          Vec3 center = p.position();
          double viewingDistance = center.distanceTo(camera);
-         if (!(viewingDistance >= 1500.0)) {
+         if (!(viewingDistance >= SmokeVisibility.MAX_SMOKE_DISTANCE)) {
             float visibility = trailVisibility(trail, p, camera);
             if (!(visibility <= 0.0F)) {
-               double distScale = 1.0;
-               if (viewingDistance > 250.0) {
-                  double factor = Math.min(1.0, (viewingDistance - 250.0) / 1250.0);
-                  distScale = 1.0 - 0.7 * factor;
-               }
+               double distScale = SmokeVisibility.distanceScale(viewingDistance);
 
                float renderRadius = (float)(p.radius * distScale);
                if (!(renderRadius < 0.001F)) {
@@ -1388,7 +1385,7 @@ public final class ContrailRenderer {
 
       for (ContrailRenderer.JetPuff jet : JET_PLUME) {
          ContrailRenderer.Sample p = jet.sample;
-         if ((!dense || p.lifetime == 65.0F) && (!(p.origin.distanceTo(camera) >= 1500.0) || !(p.position().distanceTo(camera) >= 1500.0))) {
+         if ((!dense || p.lifetime == 65.0F) && (!(p.origin.distanceTo(camera) >= SmokeVisibility.MAX_SMOKE_DISTANCE) || !(p.position().distanceTo(camera) >= SmokeVisibility.MAX_SMOKE_DISTANCE))) {
             float ageSeconds = Math.max(0.0F, (float)(now - p.born) * 0.05F);
             float consolidation = Mth.clamp((ageSeconds - 0.8F) / 1.25F, 0.0F, 1.0F);
             consolidation = consolidation * consolidation * (3.0F - 2.0F * consolidation);

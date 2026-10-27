@@ -13,3 +13,5 @@ Screenshot*.png
 # local Claude settings
 .claude/settings.local.json
 __pycache__/
+smoke.png
+source/run-gts/

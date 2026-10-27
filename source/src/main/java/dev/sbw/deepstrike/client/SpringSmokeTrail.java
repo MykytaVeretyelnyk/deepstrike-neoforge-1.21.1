@@ -2,6 +2,7 @@ package dev.sbw.deepstrike.client;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
+import dev.sbw.deepstrike.game.SmokeVisibility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -88,7 +89,7 @@ final class SpringSmokeTrail {
       VertexConsumer out, Pose pose, Vec3 camera, SpringSmokeTrail.Point p, Vec3 side, float sign, float alpha, float red, float green, float blue, int seed
    ) {
       double distance = p.position.distanceTo(camera);
-      if (!(distance >= 1500.0)) {
+      if (!(distance >= SmokeVisibility.MAX_SMOKE_DISTANCE)) {
          double width = p.width;
          alpha *= MissileVisibility.trailOpacity(p.position, distance);
          if (!(alpha <= 1.0E-4F)) {
