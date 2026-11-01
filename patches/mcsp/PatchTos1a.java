@@ -10,6 +10,7 @@ import org.objectweb.asm.*;
 // Adapts MCSP 1.0.10 Tos1aEntity (built for a newer Superb Warfare) to SBW 0.8.9.2:
 //  - adds the BARREL_ANIM synched-data accessor that newer ArtilleryEntity provides
 //  - routes DamageModifier.custom(Function2) to the 0.8.9.2 CustomDamageModifier overload
+//  - re-parents the entity onto GeckoArtilleryEntity (ArtilleryEntity is not a GeoAnimatable in 0.8.9.2)
 public class PatchTos1a implements Opcodes {
    static final String OWNER = "tech/mcsp/mcsp/entity/Tos1aEntity";
    static final String ADAPTER = OWNER + "$SbwDamageAdapter";
@@ -17,6 +18,8 @@ public class PatchTos1a implements Opcodes {
    static final String DM = "com/atsuishio/superbwarfare/entity/vehicle/damage/DamageModifier";
    static final String CUSTOM_IF = DM + "$CustomDamageModifier";
    static final String F2 = "kotlin/jvm/functions/Function2";
+   static final String ARTILLERY = "com/atsuishio/superbwarfare/entity/vehicle/base/ArtilleryEntity";
+   static final String GECKO = "com/atsuishio/superbwarfare/entity/vehicle/base/GeckoArtilleryEntity";
 
    public static void main(String[] a) throws IOException {
       try (ZipFile zf = new ZipFile(a[0]); ZipOutputStream zo = new ZipOutputStream(Files.newOutputStream(Path.of(a[1])))) {
@@ -43,8 +46,20 @@ public class PatchTos1a implements Opcodes {
       ClassReader cr = new ClassReader(in);
       ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
       cr.accept(new ClassVisitor(ASM9, cw) {
+         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            super.visit(version, access, name, signature, superName.equals(ARTILLERY) ? GECKO : superName, interfaces);
+         }
+
          public MethodVisitor visitMethod(int acc, String name, String desc, String sig, String[] ex) {
             MethodVisitor mv = super.visitMethod(acc, name, desc, sig, ex);
+            if (name.equals("<init>")) {
+               return new MethodVisitor(ASM9, mv) {
+                  public void visitMethodInsn(int op, String owner, String n, String d, boolean itf) {
+                     super.visitMethodInsn(op, op == INVOKESPECIAL && owner.equals(ARTILLERY) && n.equals("<init>") ? GECKO : owner, n, d, itf);
+                  }
+               };
+            }
+
             if (name.equals("<clinit>")) {
                return new MethodVisitor(ASM9, mv) {
                   public void visitCode() {
