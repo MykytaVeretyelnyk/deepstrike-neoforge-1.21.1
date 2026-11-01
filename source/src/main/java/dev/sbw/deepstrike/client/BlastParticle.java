@@ -1,5 +1,6 @@
 package dev.sbw.deepstrike.client;
 
+import dev.sbw.deepstrike.game.PostImpactSmoke;
 import dev.sbw.deepstrike.registry.BFParticles;
 import java.util.List;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -135,9 +136,12 @@ final class BlastParticle extends TextureSheetParticle {
          e.registerSpriteSet(
             type,
             s -> (p, l, x, y, z, dx, dy, dz) -> {
-               ContrailRenderer.emitSmoke(
-                  new Vec3(x, y, z), new Vec3(dx, dy + 0.06, dz).scale(20.0), 0.25F, l.random.nextInt(), p == BFParticles.SOOT_SMOKE.get()
-               );
+               if (PostImpactSmoke.LINGERING) {
+                  ContrailRenderer.emitSmoke(
+                     new Vec3(x, y, z), new Vec3(dx, dy + 0.06, dz).scale(20.0), 0.25F, l.random.nextInt(), p == BFParticles.SOOT_SMOKE.get()
+                  );
+               }
+
                return null;
             }
          );

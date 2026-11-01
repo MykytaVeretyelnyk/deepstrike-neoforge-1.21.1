@@ -296,7 +296,8 @@ public final class ContrailRenderer {
                Vec3 right = perpendicular(dir, null);
                Vec3 up = dir.cross(right).normalize();
                Random rand = new Random(seed * 31L + tick);
-               int jetCount = Math.max(8, Math.min(18, Math.round(11.0F * scale)));
+               // Fewer, smaller puffs: the full-size backblast read as a solid wall of smoke around the launcher.
+               int jetCount = Math.max(6, Math.min(12, Math.round(8.0F * scale)));
 
                for (int i = 0; i < jetCount; i++) {
                   double angle = (double)i / jetCount * Math.PI * 2.0 + rand.nextDouble() * 0.35;
@@ -307,7 +308,8 @@ public final class ContrailRenderer {
                   Vec3 spawn = SmokeFlow.constrainDrift(
                      world, position, position.add(back.scale(0.35 + rand.nextDouble() * 0.65)).add(radial.scale(0.25 * scale))
                   );
-                  emitDetachedSmoke(spawn, vel, (0.36F + rand.nextFloat() * 0.28F) * scale, seed + i * 19, 180 + rand.nextInt(90));
+                  // Lifetime stays >= 180 ticks: that is what marks a puff as dense launch smoke for the terrain clipping path.
+                  emitDetachedSmoke(spawn, vel, (0.26F + rand.nextFloat() * 0.2F) * scale, seed + i * 19, 180 + rand.nextInt(40));
                }
             }
          }
@@ -1032,7 +1034,7 @@ public final class ContrailRenderer {
                         : Math.min(1.0F, p.ageSeconds * (!p.hotJet && !freshCore ? 12 : 160));
                      float opacity = p.alpha * 0.81F * weight * (p.straightWake ? 1.0F : ageRamp);
                      if (p.hotJet || trail.source != null && trail.source.kind() == MissileKind.FP5 && p.width >= 1.0F) {
-                        opacity = Math.min(pkActive ? 0.88F : 0.97F, opacity * (pkActive ? 1.25F : 1.55F));
+                        opacity = Math.min(pkActive ? 0.88F : 0.75F, opacity * (pkActive ? 1.25F : 1.2F));
                      }
 
                      opacity *= visibility;

@@ -16,6 +16,7 @@ import dev.sbw.deepstrike.game.AcousticWave;
 import dev.sbw.deepstrike.game.Atmosphere;
 import dev.sbw.deepstrike.game.GroundContact;
 import dev.sbw.deepstrike.game.MissileKind;
+import dev.sbw.deepstrike.game.PostImpactSmoke;
 import dev.sbw.deepstrike.network.DeepStrikeNetwork;
 import dev.sbw.deepstrike.registry.BFParticles;
 import dev.sbw.deepstrike.registry.BFSounds;
@@ -165,7 +166,7 @@ public final class MissileExplosionEffects {
                MissileExplosionEffects.ActiveBlast blast = new MissileExplosionEffects.ActiveBlast(event, distance);
                activeBlasts.add(blast);
                BlockHitResult smokeGround = GroundContact.below(mc.level, blastPos);
-               if (!blast.interception && smokeGround.getType() != Type.MISS) {
+               if (PostImpactSmoke.LINGERING && !blast.interception && smokeGround.getType() != Type.MISS) {
                   ContrailRenderer.smokeColumn(
                      smokeGround.getLocation().add(0.0, 0.035, 0.0),
                      blast.nuclear
@@ -1077,7 +1078,7 @@ public final class MissileExplosionEffects {
                   Vec3 pos = origin.add(s.velocity().scale(this.age)).add(0.0, gravity, 0.0);
                   Vec3 instVel = s.velocity().add(0.0, -0.052 * this.age, 0.0);
                   float lifeFade = 1.0F - (float)this.age / s.maxAge();
-                  if (this.age % 2 == 0) {
+                  if (PostImpactSmoke.LINGERING && this.age % 2 == 0) {
                      ContrailRenderer.emitSmoke(
                         pos, instVel.scale(3.2), s.size() * (0.65F + 0.45F * lifeFade), (int)(this.event.seed() + i * 37L + this.age)
                      );

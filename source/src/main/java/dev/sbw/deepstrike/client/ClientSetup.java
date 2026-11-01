@@ -95,7 +95,6 @@ public final class ClientSetup {
       NeoForge.EVENT_BUS.addListener(RemoteFlights::renderTick);
       NeoForge.EVENT_BUS.addListener(StageTwoVisualReview::renderTick);
       NeoForge.EVENT_BUS.addListener(StageTwoVisualReview::serverTick);
-      NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, LateWorldEffects::capture);
       NeoForge.EVENT_BUS.addListener(EventPriority.HIGH, EngineFlamePostPass::render);
       NeoForge.EVENT_BUS.addListener(RemoteFlights::render);
       NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, RemoteFlights::renderSensor);

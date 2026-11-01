@@ -4,6 +4,7 @@ import dev.sbw.deepstrike.game.CommandCenterData;
 import dev.sbw.deepstrike.game.MissileKind;
 import dev.sbw.deepstrike.network.CommandTabletNetwork;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +60,13 @@ public final class CommandTabletScreen extends Screen {
          boolean login = screen.snapshot.contains("Network");
          screen.snapshot = tag;
          screen.error = tag.getString("Error");
+         Set<UUID> known = new HashSet<>();
+
+         for (CompoundTag u : rows(tag.getCompound("Network"), "Units")) {
+            known.add(u.getUUID("Id"));
+         }
+
+         screen.selected.retainAll(known);
          if (login != tag.contains("Network")) {
             screen.rebuildWidgets();
          }
