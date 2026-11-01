@@ -116,6 +116,7 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
    private boolean detonationResolved;
    private Vec3 impactPosition;
    private boolean dudCoasting;
+   private boolean terminalDrop;
    private int dudCoastAge;
    private int launchFuel;
    private int launchMaxFuel;
@@ -1001,7 +1002,47 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
       return new CruiseDynamics.State(this.position(), this.getDeltaMovement().scale(20.0), this.cruisePropulsion);
    }
 
+   // The client falls back to the launcher's height for a target chunk it has not loaded, so the last route point can
+   // float above the real terrain. Instead of bursting in mid-air there, drop straight down over the target.
+   private boolean beginTerminalDrop() {
+      if (this.terminalDrop) {
+         return true;
+      } else if (this.level() instanceof ServerLevel server) {
+         int bx = this.getBlockX();
+         int bz = this.getBlockZ();
+         if (FlightCollision.availableChunk(server, bx >> 4, bz >> 4) != null) {
+            int surface = server.getHeight(Types.MOTION_BLOCKING, bx, bz);
+            if (surface > server.getMinBuildHeight() + 1 && this.getY() > surface + 3.0) {
+               this.terminalDrop = true;
+               this.setEngineRunning(false);
+               return true;
+            }
+         }
+
+         return false;
+      } else {
+         return false;
+      }
+   }
+
+   private void terminalDropStep() {
+      double step = Mth.clamp(this.flightSpeed, 3.0, 16.0);
+      if (this.advanceFlight(new Vec3(0.0, -step, 0.0))) {
+         this.setDeltaMovement(0.0, -step, 0.0);
+         this.flightSpeed = step;
+         this.launchAge++;
+         if (this.getY() <= this.level().getMinBuildHeight() + 1) {
+            this.detonate();
+         }
+      }
+   }
+
    private void followCruiseRoute() {
+      if (this.terminalDrop) {
+         this.terminalDropStep();
+         return;
+      }
+
       CruiseRouteDynamics.State state = new CruiseRouteDynamics.State(
          this.cruiseState(), this.routeIndex, this.launchDistance, this.flightOrigin == null ? this.position() : this.flightOrigin
       );
@@ -1016,7 +1057,11 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
          this.setCruisePropulsion(next.motion().propulsion());
          if (result.finished()) {
             this.setDeltaMovement(next.motion().velocity().scale(0.05));
-            this.detonate();
+            this.flightSpeed = this.getDeltaMovement().length();
+            if (!this.beginTerminalDrop()) {
+               this.detonate();
+            }
+
             return;
          }
 
@@ -1032,12 +1077,17 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
       this.setDeltaMovement(state.motion().velocity().scale(0.05));
       this.flightSpeed = this.getDeltaMovement().length();
       this.launchAge++;
-      if (this.routeIndex >= this.route.size()) {
+      if (this.routeIndex >= this.route.size() && !this.beginTerminalDrop()) {
          this.detonate();
       }
    }
 
    private void followPeacekeeper() {
+      if (this.terminalDrop) {
+         this.terminalDropStep();
+         return;
+      }
+
       if (this.launchSource == null) {
          this.launchSource = this.position();
       }
@@ -1076,7 +1126,11 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
                   return;
                } else {
                   this.setDeltaMovement(next.velocity().scale(0.05));
-                  this.detonate();
+                  this.flightSpeed = this.getDeltaMovement().length();
+                  if (!this.beginTerminalDrop()) {
+                     this.detonate();
+                  }
+
                   return;
                }
             }
@@ -1168,6 +1222,18 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
                || this.launchVehicle != null && hit instanceof EntityHitResult eh && this.launchVehicle.equals(eh.getEntity().getUUID())
          );
       if (hit.getType() != Type.MISS && !own) {
+         org.slf4j.LoggerFactory.getLogger(GuidedMissileEntity.class)
+            .info(
+               "FLIGHT_CONTACT kind={} at={} traveled={} with={}",
+               this.kind(),
+               hit.getLocation(),
+               (int)this.traveled,
+               hit instanceof EntityHitResult eh2
+                  ? "entity " + net.minecraft.world.entity.EntityType.getKey(eh2.getEntity().getType()) + " " + eh2.getEntity().blockPosition()
+                  : (hit instanceof BlockHitResult bh2
+                     ? "block " + this.level().getBlockState(bh2.getBlockPos()).getBlock() + " " + bh2.getBlockPos()
+                     : "unknown")
+            );
          this.impactPosition = hit instanceof BlockHitResult ? collision.surface() : null;
          this.setPos(hit.getLocation());
          this.applyFlightOrientation(movement);
@@ -1193,6 +1259,11 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
    }
 
    private void followPlannedRoute() {
+      if (this.terminalDrop) {
+         this.terminalDropStep();
+         return;
+      }
+
       RouteDynamics.State state = new RouteDynamics.State(this.cruiseState(), this.routeIndex, this.launchDistance);
 
       for (int i = 0; i < 4; i++) {
@@ -1211,7 +1282,11 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
          state = next;
          if (result.finished()) {
             this.setDeltaMovement(next.motion().velocity().scale(0.05));
-            this.detonate();
+            this.flightSpeed = this.getDeltaMovement().length();
+            if (!this.beginTerminalDrop()) {
+               this.detonate();
+            }
+
             return;
          }
       }
@@ -1330,6 +1405,17 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
    private void detonate() {
       if (!this.detonationResolved && !this.isIntercepted()) {
          if (this.level() instanceof ServerLevel server) {
+            org.slf4j.LoggerFactory.getLogger(GuidedMissileEntity.class)
+               .info(
+                  "DETONATE kind={} pos={} surfaceBelow={} contact={} routeIndex={}/{} lastPoint={}",
+                  this.kind(),
+                  this.position(),
+                  server.getHeight(Types.MOTION_BLOCKING, this.getBlockX(), this.getBlockZ()),
+                  this.hasImpactPosition(),
+                  this.routeIndex,
+                  this.route == null ? 0 : this.route.size(),
+                  this.route == null || this.route.isEmpty() ? null : this.route.get(this.route.size() - 1)
+               );
             double failure = switch (this.kind()) {
                case FP5 -> 0.1;
                case STORM_SHADOW, SPIKE_NLOS -> 0.05;
