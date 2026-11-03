@@ -3,6 +3,7 @@ package dev.sbw.deepstrike.game;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import dev.sbw.deepstrike.api.InterceptionEvent;
 import dev.sbw.deepstrike.network.PatriotDefenseNetwork;
 import dev.sbw.deepstrike.vehicle.DeepStrikeVehicleEntity;
 import dev.sbw.deepstrike.vehicle.Su24mEntity;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Explosion.BlockInteraction;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import dev.sbw.deepstrike.compat.TickEvent.LevelTickEvent;
 import dev.sbw.deepstrike.compat.TickEvent.Phase;
@@ -144,7 +146,24 @@ public final class AirDefenseTargets {
       return entity instanceof GuidedMissileEntity ? entity.position() : entity.getBoundingBox().getCenter();
    }
 
+   private static void publish(Entity target, Entity projectile, int defense) {
+      UUID attacker = target instanceof GuidedMissileEntity guided ? guided.ownerId() : null;
+      UUID defender = null;
+      Entity unit = null;
+      if (projectile instanceof PatriotInterceptorEntity interceptor && interceptor.defenseSource() != null && target.level() instanceof ServerLevel level) {
+         unit = level.getEntity(interceptor.defenseSource());
+         if (unit != null && unit.getFirstPassenger() != null) {
+            defender = unit.getFirstPassenger().getUUID();
+         }
+      } else if (projectile instanceof MissileProjectile manpad && manpad.getOwner() != null) {
+         defender = manpad.getOwner().getUUID();
+      }
+
+      NeoForge.EVENT_BUS.post(new InterceptionEvent(target, projectile, attacker, defender, unit, defense));
+   }
+
    public static void hit(Entity target, Entity projectile, int defense) {
+      publish(target, projectile, defense);
       if (target instanceof GuidedMissileEntity missile) {
          missile.intercept(defense);
       } else if (target.level() instanceof ServerLevel level && explosive(target)) {

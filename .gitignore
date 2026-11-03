@@ -15,3 +15,5 @@ Screenshot*.png
 __pycache__/
 smoke.png
 source/run-gts/
+warmode/build/
+warmode/run-server/
