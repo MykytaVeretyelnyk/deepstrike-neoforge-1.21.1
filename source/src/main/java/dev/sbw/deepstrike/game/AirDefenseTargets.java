@@ -15,8 +15,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -80,14 +82,43 @@ public final class AirDefenseTargets {
       }
    }
 
+   /** Radar contact kind used for Project: Explosive ordnance. */
+   public static final int EXPLOSIVE_KIND = 102;
+
+   private static final Set<String> EXPLOSIVE_ENTITIES = Set.of("icbm", "small_bomb", "big_bomb", "nuclear_bomb", "fire_bomb");
+
+   /**
+    * Ordnance from Project: Explosive (ICBM and aerial bombs). Matched by registry id so the mod stays optional.
+    * Only Patriot can engage it; the Tamir of Iron Dome is too light for this class of target.
+    */
+   public static boolean explosive(Entity entity) {
+      if (entity == null) {
+         return false;
+      } else {
+         ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+         return id.getNamespace().equals("projectexplosive") && EXPLOSIVE_ENTITIES.contains(id.getPath());
+      }
+   }
+
    public static boolean target(Entity entity) {
-      return entity != null && entity.isAlive() && (entity instanceof GuidedMissileEntity missile ? !missile.isIntercepted() : aircraft(entity));
+      return entity != null
+         && entity.isAlive()
+         && (entity instanceof GuidedMissileEntity missile ? !missile.isIntercepted() : aircraft(entity) || explosive(entity));
+   }
+
+   /** Targets the Iron Dome (Tamir) is allowed to engage: everything Patriot sees except Project: Explosive ordnance. */
+   public static boolean tamirTarget(Entity entity) {
+      return target(entity) && !explosive(entity);
    }
 
    public static int kind(Entity entity) {
       return entity instanceof GuidedMissileEntity missile
          ? missile.kind().ordinal()
-         : (entity instanceof Su24mEntity ? 200 : (entity instanceof VehicleEntity v && v.getVehicleType() == VehicleType.HELICOPTER ? 101 : 100));
+         : (
+            entity instanceof Su24mEntity
+               ? 200
+               : (explosive(entity) ? EXPLOSIVE_KIND : (entity instanceof VehicleEntity v && v.getVehicleType() == VehicleType.HELICOPTER ? 101 : 100))
+         );
    }
 
    public static String label(int kind) {
@@ -96,9 +127,15 @@ public final class AirDefenseTargets {
       } else {
          return kind == 200
             ? "Su-24M"
-            : (kind == 101
-                  ? Component.translatable("label.deepstrike.helicopter")
-                  : (kind >= 100 ? Component.translatable("label.deepstrike.aircraft") : MissileKind.byId(kind).title()))
+            : (
+                  kind == 101
+                     ? Component.translatable("label.deepstrike.helicopter")
+                     : (
+                        kind == EXPLOSIVE_KIND
+                           ? Component.translatable("label.deepstrike.ordnance")
+                           : (kind >= 100 ? Component.translatable("label.deepstrike.aircraft") : MissileKind.byId(kind).title())
+                     )
+               )
                .getString();
       }
    }
@@ -110,6 +147,10 @@ public final class AirDefenseTargets {
    public static void hit(Entity target, Entity projectile, int defense) {
       if (target instanceof GuidedMissileEntity missile) {
          missile.intercept(defense);
+      } else if (target.level() instanceof ServerLevel level && explosive(target)) {
+         // the warhead is destroyed in the air: no detonation, only the interception flash
+         InterceptionEffects.emit(level, aim(target), defense);
+         target.discard();
       } else if (target.level() instanceof ServerLevel level && aircraft(target)) {
          InterceptionEffects.emit(level, aim(target), defense);
          if (target instanceof VehicleEntity vehicle) {

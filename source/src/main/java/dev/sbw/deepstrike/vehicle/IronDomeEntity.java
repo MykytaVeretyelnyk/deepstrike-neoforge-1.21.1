@@ -209,7 +209,7 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
          && this.isAutoDefense()
          && this.getReadyTamir() > 0
          && !this.isReloading()
-         && AirDefenseTargets.target(target)
+         && AirDefenseTargets.tamirTarget(target)
          && !(target.distanceToSqr(this) > 2.025E7)
          && (!AirDefenseTargets.aircraft(target) || this.aircraftTargets)
          && !(target instanceof GuidedMissileEntity missile && this.isFriendly(missile))) {
@@ -349,7 +349,7 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
          this.cachedContacts.clear();
 
          for (Entity e : server.getAllEntities()) {
-            if (AirDefenseTargets.target(e)) {
+            if (AirDefenseTargets.tamirTarget(e)) {
                double distSqr = e.distanceToSqr(this);
                if (!(distSqr > 6.4E7) && RadarHorizon.visible(e, this)) {
                   Vec3 impact = e instanceof GuidedMissileEntity guided ? predictImpactPoint(guided) : e.position().add(e.getDeltaMovement().scale(50.0));
@@ -441,7 +441,9 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
    public void fireManual(UUID targetId, ServerPlayer player) {
       if (this.level() instanceof ServerLevel server) {
          Entity target = server.getEntity(targetId);
-         if (!AirDefenseTargets.target(target)) {
+         if (AirDefenseTargets.explosive(target)) {
+            player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.too_heavy"));
+         } else if (!AirDefenseTargets.tamirTarget(target)) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.lost"));
          } else if (AirDefenseTargets.aircraft(target) && !this.aircraftTargets) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.aircraft"));

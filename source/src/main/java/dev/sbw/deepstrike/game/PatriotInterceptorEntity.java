@@ -268,7 +268,7 @@ public final class PatriotInterceptorEntity extends Entity {
       } else if (this.level() instanceof ServerLevel server && this.targetId != null && this.age <= 1200) {
          this.updateChunkTickets(server);
          Entity candidate = server.getEntity(this.targetId);
-         if (!AirDefenseTargets.target(candidate)) {
+         if (!AirDefenseTargets.target(candidate) || this.domeLaunch && AirDefenseTargets.explosive(candidate)) {
             this.burst(server, false);
          } else if (!this.forcedManual
             && this.sourceDefense != null

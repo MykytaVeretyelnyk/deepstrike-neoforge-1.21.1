@@ -62,7 +62,7 @@ final class IronDomeDefenseCoordinator {
             for (Entity entity : level.getAllEntities()) {
                if (entity instanceof IronDomeEntity battery && battery.isAlive()) {
                   batteries.add(battery);
-               } else if (AirDefenseTargets.target(entity)) {
+               } else if (AirDefenseTargets.tamirTarget(entity)) {
                   targets.add(entity);
                }
             }
@@ -99,12 +99,12 @@ final class IronDomeDefenseCoordinator {
 
             state.engagements.entrySet().removeIf(entry -> {
                Entity targetx = level.getEntity(entry.getKey());
-               return targetx != null ? !AirDefenseTargets.target(targetx) : !ActiveFlights.get(level).hasActiveFlight(entry.getKey());
+               return targetx != null ? !AirDefenseTargets.tamirTarget(targetx) : !ActiveFlights.get(level).hasActiveFlight(entry.getKey());
             });
 
             for (IronDomeDefenseCoordinator.Engagement engagement : new ArrayList<>(state.engagements.values())) {
                Entity target = level.getEntity(engagement.target);
-               if (AirDefenseTargets.target(target)) {
+               if (AirDefenseTargets.tamirTarget(target)) {
                   boolean interceptorInFlight = false;
 
                   for (UUID interceptorId : engagement.interceptors) {
