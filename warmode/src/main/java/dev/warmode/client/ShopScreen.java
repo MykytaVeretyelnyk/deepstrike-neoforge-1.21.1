@@ -122,7 +122,8 @@ public final class ShopScreen extends Screen {
 
    @Override
    public void render(GuiGraphics g, int mouseX, int mouseY, float partial) {
-      this.renderTransparentBackground(g);
+      // Screen.render draws the blurred menu background itself; drawing it after our content hid everything but the buttons
+      super.render(g, mouseX, mouseY, partial);
       int left = this.left();
       WarNet.State s = WarClient.state;
       WarTeam team = s == null ? null : WarTeam.byOrdinal(s.team());
@@ -149,14 +150,17 @@ public final class ShopScreen extends Screen {
          this.buyButtons.get(row).active = affordable;
       }
 
-      super.render(g, mouseX, mouseY, partial);
-
       for (int row = 0; row < this.visible.size(); row++) {
          int y = top + row * ROW_HEIGHT;
          if (mouseX >= left && mouseX < left + WIDTH - 64 && mouseY >= y && mouseY < y + 20) {
             g.renderTooltip(this.font, stackOf(this.visible.get(row)), mouseX, mouseY);
          }
       }
+   }
+
+   @Override
+   public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partial) {
+      this.renderTransparentBackground(g);
    }
 
    @Override
