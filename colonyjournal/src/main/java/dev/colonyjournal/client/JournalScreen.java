@@ -2,411 +2,462 @@ package dev.colonyjournal.client;
 
 import com.minecolonies.api.colony.IColonyView;
 import dev.colonyjournal.analysis.ColonyReport;
-import dev.colonyjournal.analysis.ColonyReport.Issue;
-import dev.colonyjournal.analysis.ColonyReport.Link;
-import dev.colonyjournal.analysis.ColonyReport.Row;
-import dev.colonyjournal.analysis.ColonyReport.Severity;
-import dev.colonyjournal.analysis.ColonyReport.Status;
-import dev.colonyjournal.analysis.ColonyReport.TypeInfo;
 import dev.colonyjournal.graph.BuildingGraph;
+import dev.colonyjournal.net.Payloads;
+import dev.colonyjournal.net.Views.ColonyRef;
+import dev.colonyjournal.net.Views.EconomyView;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.resources.ResourceLocation;
 
-/** The colony journal: a map of building links, a list of problems and a list of buildings. */
+/**
+ * The colony journal, drawn like the vanilla advancements book: a framed window, tabs along the top and a stone
+ * background. The screen keeps the window, the tab switching, the one-line subtitle with the help button, the refresh
+ * timers and the message line; everything else lives in the {@link JournalTab} classes.
+ */
 public final class JournalScreen extends Screen {
-   private enum Tab {
-      MAP,
-      PROBLEMS,
-      BUILDINGS
+   private static final int TAB_W = 28;
+   private static final int TAB_H = 32;
+   /** Height of the subtitle band at the top of the content. */
+   private static final int SUB_H = 12;
+   private static final int HELP_W = 12;
+   private static final int MESSAGE_TICKS = 100;
+   private static final String[] TAB_SPRITES = {"tab_above_left", "tab_above_middle", "tab_above_right"};
+   private static final ResourceLocation[] TAB_NORMAL = new ResourceLocation[3];
+   private static final ResourceLocation[] TAB_SELECTED = new ResourceLocation[3];
+
+   static {
+      for (int i = 0; i < 3; i++) {
+         TAB_NORMAL[i] = Ui.sprite("advancements/" + TAB_SPRITES[i]);
+         TAB_SELECTED[i] = Ui.sprite("advancements/" + TAB_SPRITES[i] + "_selected");
+      }
    }
 
-   private static final int NODE_W = 92;
-   private static final int NODE_H = 16;
-   private static final int GAP_X = 52;
-   private static final int GAP_Y = 6;
-   private static final int[] OK_COLORS = {0xFFE05050, 0xFFE05050, 0xFFE08A30, 0xFFE0C040, 0xFF55CC66};
-
    private final IColonyView colony;
+   private final ColonyRef ref;
+   private final List<JournalTab> tabs;
+   private final LinksTab linksTab;
+   private final GuideTab guideTab;
    private ColonyReport report;
-   private Tab tab = Tab.MAP;
-   private String selected;
-   private double panX = 8;
-   private double panY = 8;
-   private int scroll;
+   private int tabIndex;
+   private int winX;
+   private int winY;
+   private int winW;
+   private int winH;
+   private int reportTimer;
    private int refreshTimer;
-   private boolean dragging;
+   private int seenSerial;
+   private int messageTicks;
+   private Component message = Component.empty();
+   private boolean messageOk = true;
+   private boolean opened;
 
    public JournalScreen(IColonyView colony) {
       super(Component.translatable("journal.colonyjournal.title"));
       this.colony = colony;
+      this.ref = new ColonyRef(colony.getDimension().location().toString(), colony.getID());
       this.report = ColonyReport.build(colony);
-   }
-
-   private int left() {
-      return Math.max(6, (this.width - 460) / 2);
-   }
-
-   private int panelWidth() {
-      return Math.min(460, this.width - 12);
-   }
-
-   private int top() {
-      return 44;
-   }
-
-   private int panelHeight() {
-      return this.height - this.top() - 8;
-   }
-
-   @Override
-   protected void init() {
-      int x = this.left();
-      int y = 22;
-      int w = 84;
-
-      for (Tab t : Tab.values()) {
-         Button button = Button.builder(Component.translatable("journal.colonyjournal.tab." + t.name().toLowerCase()), b -> {
-            this.tab = t;
-            this.scroll = 0;
-            this.rebuildWidgets();
-         }).bounds(x, y, w, 18).build();
-         button.active = this.tab != t;
-         this.addRenderableWidget(button);
-         x += w + 4;
+      this.seenSerial = ClientData.resultSerial();
+      this.linksTab = new LinksTab(this);
+      this.guideTab = new GuideTab(this);
+      this.tabs = List.of(
+         new OverviewTab(this), this.linksTab, new ProblemsTab(this), new BuildingsTab(this), new EconomyTab(this), new MarketTab(this), new StatsTab(this), this.guideTab
+      );
+      if (FirstRun.consume()) {
+         this.guideTab.select("steps");
+         this.tabIndex = this.indexOf("guide");
       }
    }
 
-   @Override
-   public void tick() {
-      if (++this.refreshTimer >= 20) {
-         this.refreshTimer = 0;
-         this.report = ColonyReport.build(this.colony);
+   // ------------------------------------------------------------------ accessors for the tabs
+
+   ColonyReport report() {
+      return this.report;
+   }
+
+   ColonyRef ref() {
+      return this.ref;
+   }
+
+   Font font() {
+      return this.font;
+   }
+
+   /** The economy data of this colony, or null while it is loading or belongs to another colony. */
+   EconomyView economy() {
+      EconomyView v = ClientData.economy;
+      return v != null && v.colony().equals(this.ref) ? v : null;
+   }
+
+   /** Overall happiness of the citizens, 0 to 10. */
+   double happiness() {
+      return this.colony.getOverallHappiness();
+   }
+
+   /** The in-game day of the colony. */
+   int day() {
+      try {
+         return this.colony.getDay();
+      } catch (RuntimeException e) {
+         Minecraft mc = Minecraft.getInstance();
+         return mc.level == null ? 0 : (int)(mc.level.getDayTime() / 24000L);
       }
    }
 
-   private static int color(Status status) {
-      return OK_COLORS[status.ordinal()];
+   int contentX() {
+      return this.winX + 9;
    }
 
-   // ------------------------------------------------------------------ map
+   int contentY() {
+      return this.winY + 18 + SUB_H;
+   }
 
-   private List<String> visibleNodes() {
-      Set<String> ids = new LinkedHashSet<>();
+   int contentW() {
+      return this.winW - 18;
+   }
 
-      for (String id : BuildingGraph.NODES.keySet()) {
-         if (this.report.statusOf(id) != Status.ABSENT) {
-            ids.add(id);
+   int contentH() {
+      return this.winH - 27 - SUB_H;
+   }
+
+   void addTabWidget(AbstractWidget widget) {
+      this.addRenderableWidget(widget);
+   }
+
+   private JournalTab tab() {
+      return this.tabs.get(this.tabIndex);
+   }
+
+   private int indexOf(String key) {
+      for (int i = 0; i < this.tabs.size(); i++) {
+         if (this.tabs.get(i).key().equals(key)) {
+            return i;
          }
       }
 
-      for (Link link : this.report.links) {
-         if (this.report.statusOf(link.edge().to()) != Status.ABSENT) {
-            ids.add(link.edge().from());
-         }
-      }
-
-      return new ArrayList<>(ids);
+      return 0;
    }
 
-   private int[] nodePos(List<String> visible, String id) {
-      BuildingGraph.Node node = BuildingGraph.NODES.get(id);
-      if (node == null) {
-         return null;
-      }
-
-      int row = 0;
-
-      for (String other : visible) {
-         if (other.equals(id)) {
-            break;
-         }
-
-         BuildingGraph.Node o = BuildingGraph.NODES.get(other);
-         if (o != null && o.layer() == node.layer()) {
-            row++;
-         }
-      }
-
-      int x = this.left() + (int)this.panX + node.layer() * (NODE_W + GAP_X);
-      int y = this.top() + 10 + (int)this.panY + row * (NODE_H + GAP_Y);
-      return new int[] {x, y};
+   /** Opens the tab with the given key ("overview", "map", "problems", "buildings", "economy", "market", "stats", "guide"). */
+   void openTab(String key) {
+      this.selectTab(this.indexOf(key));
    }
 
-   private static void line(GuiGraphics g, int x1, int y1, int x2, int y2, int color) {
-      g.fill(Math.min(x1, x2), y1, Math.max(x1, x2) + 1, y1 + 1, color);
-      g.fill(x2, Math.min(y1, y2), x2 + 1, Math.max(y1, y2) + 1, color);
+   /** Switches to the Links tab and centres the map on the building type. */
+   void showOnMap(String buildingId, String partner) {
+      this.linksTab.focus(buildingId, partner);
+      this.openTab("map");
    }
 
-   private void drawLink(GuiGraphics g, int[] from, int[] to, int color, int channel) {
-      boolean forward = to[0] > from[0];
-      int sx = forward ? from[0] + NODE_W : from[0];
-      int sy = from[1] + NODE_H / 2;
-      int tx = forward ? to[0] : to[0] + NODE_W;
-      int ty = to[1] + NODE_H / 2;
-      int mid = forward ? sx + 8 + channel % 20 : sx - 8 - channel % 20;
-      if (Math.abs(to[0] - from[0]) < 4) {
-         mid = sx + NODE_W + 4 + channel % 12;
+   /** Shows the building on the map when it is part of the map, otherwise opens the given tab. */
+   void jump(String tabKey, String focus, String partner) {
+      // Only a to-do that asks for the map goes there: the housing to-do names a basic building but wants the Buildings tab.
+      if ("map".equals(tabKey) && BuildingGraph.onMap(focus)) {
+         this.showOnMap(focus, partner);
+      } else {
+         this.openTab(tabKey);
       }
-
-      g.fill(Math.min(sx, mid), sy, Math.max(sx, mid) + 1, sy + 1, color);
-      g.fill(mid, Math.min(sy, ty), mid + 1, Math.max(sy, ty) + 1, color);
-      g.fill(Math.min(mid, tx), ty, Math.max(mid, tx) + 1, ty + 1, color);
    }
 
-   private void renderMap(GuiGraphics g, int mouseX, int mouseY) {
-      int px = this.left();
-      int py = this.top();
-      g.enableScissor(px, py, px + this.panelWidth(), py + this.panelHeight() - 54);
-      List<String> visible = this.visibleNodes();
-      int channel = 0;
-
-      for (Link link : this.report.links) {
-         int[] a = this.nodePos(visible, link.edge().from());
-         int[] b = this.nodePos(visible, link.edge().to());
-         if (a == null || b == null || !visible.contains(link.edge().from()) || !visible.contains(link.edge().to()) || this.report.statusOf(link.edge().to()) == Status.ABSENT) {
-            continue;
-         }
-
-         boolean focus = link.edge().from().equals(this.selected) || link.edge().to().equals(this.selected);
-         int color = link.broken() ? (link.edge().optional() ? 0xFFB09030 : 0xFFE05050) : 0xFF5C9A68;
-         if (this.selected != null && !focus) {
-            color = (color & 0x00FFFFFF) | 0x40000000;
-         } else if (!focus) {
-            color = (color & 0x00FFFFFF) | 0x90000000;
-         }
-
-         this.drawLink(g, a, b, color, channel += 5);
-      }
-
-      for (String id : visible) {
-         int[] pos = this.nodePos(visible, id);
-         TypeInfo info = this.report.types.get(id);
-         Status status = this.report.statusOf(id);
-         boolean ghost = status == Status.ABSENT;
-         int c = color(status);
-         g.fill(pos[0], pos[1], pos[0] + NODE_W, pos[1] + NODE_H, ghost ? 0xCC2A1414 : 0xCC10181E);
-         g.fill(pos[0], pos[1], pos[0] + 3, pos[1] + NODE_H, c);
-         if (id.equals(this.selected)) {
-            g.renderOutline(pos[0] - 1, pos[1] - 1, NODE_W + 2, NODE_H + 2, 0xFFFFFFFF);
-         }
-
-         String label = info == null ? id : info.name().getString();
-         if (info != null && info.count() > 0) {
-            label += " ×" + info.count();
-         }
-
-         g.drawString(this.font, this.font.plainSubstrByWidth(label, NODE_W - 8), pos[0] + 6, pos[1] + 4, ghost ? 0xFFB08080 : 0xFFFFFFFF, false);
-      }
-
-      g.disableScissor();
-      this.renderDetail(g, px, py + this.panelHeight() - 52);
+   /** Opens the guide at the section (see {@link GuideText#IDS}). */
+   void openGuide(String section) {
+      this.guideTab.select(section);
+      this.openTab("guide");
    }
 
-   private void renderDetail(GuiGraphics g, int x, int y) {
-      g.fill(x, y, x + this.panelWidth(), y + 52, 0xAA000000);
-      if (this.selected == null) {
-         g.drawString(this.font, Component.translatable("journal.colonyjournal.hint"), x + 4, y + 4, 0xFFAAAAAA, false);
+   private void selectTab(int index) {
+      if (index == this.tabIndex) {
          return;
       }
 
-      TypeInfo info = this.report.types.get(this.selected);
-      Status status = this.report.statusOf(this.selected);
-      Component head = Component.empty().append(ColonyReport.nameOf(this.selected)).append("  ").append(Component.translatable("journal.colonyjournal.reason." + status.name().toLowerCase()));
-      g.drawString(this.font, head, x + 4, y + 4, color(status), false);
-      if (info != null && info.slots() > 0) {
-         g.drawString(this.font, Component.translatable("journal.colonyjournal.workers", info.workers(), info.slots()), x + 4, y + 15, 0xFFCCCCCC, false);
-      }
-
-      StringBuilder needs = new StringBuilder();
-      StringBuilder gives = new StringBuilder();
-
-      for (Link link : this.report.links) {
-         if (link.edge().to().equals(this.selected)) {
-            needs.append(ColonyReport.nameOf(link.edge().from()).getString()).append(link.broken() ? " ✗" : " ✓").append(", ");
-         }
-
-         if (link.edge().from().equals(this.selected) && this.report.statusOf(link.edge().to()) != Status.ABSENT) {
-            gives.append(ColonyReport.nameOf(link.edge().to()).getString()).append(", ");
-         }
-      }
-
-      g.drawString(this.font, this.font.plainSubstrByWidth(Component.translatable("journal.colonyjournal.needs").getString() + " " + trimComma(needs), this.panelWidth() - 8), x + 4, y + 26, 0xFFE0E0A0, false);
-      g.drawString(this.font, this.font.plainSubstrByWidth(Component.translatable("journal.colonyjournal.supplies").getString() + " " + trimComma(gives), this.panelWidth() - 8), x + 4, y + 38, 0xFFA0E0A0, false);
+      this.tabIndex = index;
+      this.refreshTimer = 0;
+      this.rebuildWidgets();
+      this.tab().onOpen();
    }
 
-   private static String trimComma(StringBuilder text) {
-      String s = text.toString();
-      return s.endsWith(", ") ? s.substring(0, s.length() - 2) : (s.isEmpty() ? "-" : s);
+   // ------------------------------------------------------------------ message line
+
+   /** The text of the last action result while it is fresh, or null. */
+   Component message() {
+      return this.messageTicks > 0 ? this.message : null;
    }
 
-   // ------------------------------------------------------------------ lists
-
-   private int issueColor(Severity severity) {
-      return switch (severity) {
-         case ERROR -> 0xFFE05050;
-         case WARN -> 0xFFE0C040;
-         case INFO -> 0xFF8AB4D8;
-      };
+   boolean messageOk() {
+      return this.messageOk;
    }
 
-   private void renderIssues(GuiGraphics g, int mouseX, int mouseY) {
-      int x = this.left();
-      int y = this.top();
-      int bottom = y + this.panelHeight();
-      g.enableScissor(x, y, x + this.panelWidth(), bottom);
-      int cursor = y + 4 - this.scroll;
-      if (this.report.issues.isEmpty()) {
-         g.drawString(this.font, Component.translatable("journal.colonyjournal.all_good"), x + 6, cursor, 0xFF55CC66, false);
+   /** Draws the message (if any) on one line inside the given width. */
+   void renderMessage(GuiGraphics g, int x, int y, int width) {
+      Component text = this.message();
+      if (text != null) {
+         String line = this.font.plainSubstrByWidth(text.getString(), width);
+         g.drawString(this.font, line, x, y, this.messageOk ? 0xFF7FE08A : 0xFFFF6060, true);
       }
-
-      for (Issue issue : this.report.issues) {
-         List<FormattedCharSequence> lines = this.font.split(issue.text(), this.panelWidth() - 20);
-         int height = lines.size() * 10 + 4;
-         g.fill(x, cursor, x + this.panelWidth(), cursor + height, 0x66000000);
-         g.fill(x, cursor, x + 3, cursor + height, this.issueColor(issue.severity()));
-         int ly = cursor + 2;
-
-         for (FormattedCharSequence line : lines) {
-            g.drawString(this.font, line, x + 8, ly, 0xFFFFFFFF, false);
-            ly += 10;
-         }
-
-         cursor += height + 3;
-      }
-
-      g.disableScissor();
    }
 
-   private int issuesHeight() {
-      int total = 4;
-
-      for (Issue issue : this.report.issues) {
-         total += this.font.split(issue.text(), this.panelWidth() - 20).size() * 10 + 7;
-      }
-
-      return total;
-   }
-
-   private void renderBuildings(GuiGraphics g) {
-      int x = this.left();
-      int y = this.top();
-      g.enableScissor(x, y, x + this.panelWidth(), y + this.panelHeight());
-      int cursor = y + 4 - this.scroll;
-
-      for (Row row : this.report.rows) {
-         g.fill(x, cursor, x + this.panelWidth(), cursor + 14, 0x66000000);
-         g.fill(x, cursor, x + 3, cursor + 14, color(row.status()));
-         g.drawString(this.font, this.font.plainSubstrByWidth(row.name().getString(), 150), x + 8, cursor + 3, 0xFFFFFFFF, false);
-         g.drawString(this.font, Component.translatable("journal.colonyjournal.level", row.level(), row.maxLevel()), x + 162, cursor + 3, 0xFFCCCCCC, false);
-         if (row.slots() > 0) {
-            g.drawString(this.font, Component.translatable("journal.colonyjournal.workers", row.workers(), row.slots()), x + 222, cursor + 3, 0xFFCCCCCC, false);
-         }
-
-         if (row.requests() > 0) {
-            g.drawString(this.font, Component.translatable("journal.colonyjournal.requests", row.requests()), x + 300, cursor + 3, 0xFFE0C040, false);
-         }
-
-         g.drawString(this.font, row.pos().toShortString(), x + 360, cursor + 3, 0xFF888888, false);
-         cursor += 16;
-      }
-
-      g.disableScissor();
-   }
-
-   // ------------------------------------------------------------------ screen
+   // ------------------------------------------------------------------ layout
 
    @Override
-   public void render(GuiGraphics g, int mouseX, int mouseY, float partial) {
-      super.render(g, mouseX, mouseY, partial);
-      g.drawString(this.font, this.title, this.left(), 8, 0xFFFFFFFF, true);
-      Component stat = Component.translatable("journal.colonyjournal.colony", this.report.colonyName, this.report.citizens, this.report.citizenLimit);
-      g.drawString(this.font, stat, this.left() + this.panelWidth() - this.font.width(stat), 8, 0xFFCCCCCC, true);
-      g.fill(this.left() - 2, this.top() - 2, this.left() + this.panelWidth() + 2, this.top() + this.panelHeight() + 2, 0x99000000);
-      switch (this.tab) {
-         case MAP -> this.renderMap(g, mouseX, mouseY);
-         case PROBLEMS -> this.renderIssues(g, mouseX, mouseY);
-         case BUILDINGS -> this.renderBuildings(g);
+   protected void init() {
+      this.winW = Math.max(160, Math.min(this.width - 20, 420));
+      this.winH = Math.max(100, Math.min(this.height - 20 - 24, 260));
+      this.winX = (this.width - this.winW) / 2;
+      this.winY = (this.height - (this.winH + TAB_H - 4)) / 2 + TAB_H - 4;
+      this.tab().init();
+      if (!this.opened) {
+         this.opened = true;
+         this.tab().onOpen();
+      }
+   }
+
+   /** Width of one tab sprite: the full 28 pixels, squeezed when eight tabs do not fit the window. */
+   private int tabW() {
+      return Math.min(TAB_W, (this.winW - 4) / this.tabs.size());
+   }
+
+   private int tabPitch() {
+      int w = this.tabW();
+      return Ui.clamp((this.winW - w) / Math.max(1, this.tabs.size() - 1), w, TAB_W + 4);
+   }
+
+   private int tabX(int index) {
+      return this.winX + this.tabPitch() * index;
+   }
+
+   private int tabY() {
+      return this.winY - TAB_H + 4;
+   }
+
+   /** The tab under the mouse, or -1. The tabs never overlap, so drawing and hit-testing use the same rectangles. */
+   private int tabAt(double mx, double my) {
+      for (int i = 0; i < this.tabs.size(); i++) {
+         if (Ui.in(mx, my, this.tabX(i), this.tabY(), this.tabW(), TAB_H - 4)) {
+            return i;
+         }
+      }
+
+      return -1;
+   }
+
+   private int subX() {
+      return this.winX + 9;
+   }
+
+   private int subY() {
+      return this.winY + 18;
+   }
+
+   private int subW() {
+      return this.winW - 18;
+   }
+
+   private int helpX() {
+      return this.subX() + this.subW() - HELP_W - 1;
+   }
+
+   private boolean overHelp(double mx, double my) {
+      return this.tab().showHelp() && Ui.in(mx, my, this.helpX(), this.subY() + 1, HELP_W, SUB_H - 2);
+   }
+
+   /** The width the subtitle text may use. */
+   private int subtitleW() {
+      return this.subW() - 8 - (this.tab().showHelp() ? HELP_W + 2 : 0);
+   }
+
+   // ------------------------------------------------------------------ update
+
+   @Override
+   public void tick() {
+      super.tick();
+      if (++this.reportTimer >= 20) {
+         this.reportTimer = 0;
+         this.report = ColonyReport.build(this.colony);
+         for (JournalTab t : this.tabs) {
+            t.onReport();
+         }
+      }
+
+      int serial = ClientData.resultSerial();
+      if (serial != this.seenSerial) {
+         this.seenSerial = serial;
+         Payloads.ActionResult result = ClientData.lastResult;
+         if (result != null) {
+            this.message = Component.translatable("msg.colonyjournal." + result.key(), result.arg());
+            this.messageOk = result.ok();
+            this.messageTicks = MESSAGE_TICKS;
+         }
+      } else if (this.messageTicks > 0) {
+         this.messageTicks--;
+      }
+
+      JournalTab current = this.tab();
+      current.tick();
+      int interval = current.refreshInterval();
+      if (interval > 0 && ++this.refreshTimer >= interval) {
+         this.refreshTimer = 0;
+         current.requestRefresh();
+      }
+   }
+
+   // ------------------------------------------------------------------ rendering
+
+   @Override
+   public void renderBackground(GuiGraphics g, int mx, int my, float partial) {
+      // Called first by Screen.render, so everything that must lie below the widgets is drawn here.
+      this.renderTransparentBackground(g);
+      JournalTab current = this.tab();
+      int x = this.contentX();
+      int y = this.contentY();
+      int w = this.contentW();
+      int h = this.contentH();
+      if (!current.ownBackground()) {
+         Ui.stone(g, x, y, w, h, 0, 0);
+         g.fill(x, y, x + w, y + h, 0xB0000000);
+      }
+
+      g.enableScissor(x, y, x + w, y + h);
+      current.render(g, mx, my);
+      g.disableScissor();
+      this.renderSubtitle(g, mx, my);
+      Ui.window(g, this.winX, this.winY, this.winW, this.winH);
+      this.renderTabs(g);
+      Component head = Component.translatable("journal.colonyjournal.window_title_tab", current.title(), this.report.colonyName);
+      Component citizens = Component.translatable("journal.colonyjournal.citizens", this.report.citizens, this.report.citizenLimit);
+      int citizensW = this.font.width(citizens);
+      int free = this.winW - 16 - citizensW - 8;
+      g.drawString(this.font, this.font.plainSubstrByWidth(head.getString(), Math.max(20, free)), this.winX + 8, this.winY + 6, 0xFF404040, false);
+      if (free >= this.font.width(head) || free > 80) {
+         g.drawString(this.font, citizens, this.winX + this.winW - 8 - citizensW, this.winY + 6, 0xFF404040, false);
+      }
+   }
+
+   private void renderSubtitle(GuiGraphics g, int mx, int my) {
+      JournalTab current = this.tab();
+      int x = this.subX();
+      int y = this.subY();
+      int w = this.subW();
+      Ui.stone(g, x, y, w, SUB_H, 0, 0);
+      g.fill(x, y, x + w, y + SUB_H, 0xD0000000);
+      g.fill(x, y + SUB_H - 1, x + w, y + SUB_H, 0xFF000000);
+      String text = this.font.plainSubstrByWidth(current.subtitle().getString(), this.subtitleW());
+      g.drawString(this.font, text, x + 4, y + 2, 0xFFC8C8C8, false);
+      if (current.showHelp()) {
+         Ui.button(g, this.font, this.helpX(), y + 1, HELP_W, SUB_H - 2, Component.literal("?"), true, this.overHelp(mx, my));
+      }
+   }
+
+   private void renderTabs(GuiGraphics g) {
+      int n = this.tabs.size();
+      int y = this.tabY();
+      int w = this.tabW();
+
+      for (int i = 0; i < n; i++) {
+         int kind = i == 0 ? 0 : (i == n - 1 ? 2 : 1);
+         int x = this.tabX(i);
+         g.blitSprite(i == this.tabIndex ? TAB_SELECTED[kind] : TAB_NORMAL[kind], x, y, w, TAB_H);
+         g.renderItem(this.tabs.get(i).icon(), x + (w - 16) / 2, y + 9);
       }
    }
 
    @Override
-   public boolean mouseClicked(double mouseX, double mouseY, int button) {
-      if (super.mouseClicked(mouseX, mouseY, button)) {
+   public void render(GuiGraphics g, int mx, int my, float partial) {
+      super.render(g, mx, my, partial);
+      JournalTab current = this.tab();
+      if (!current.ownMessageLine()) {
+         Component text = this.message();
+         if (text != null) {
+            int w = Math.min(this.contentW() - 8, this.font.width(text.getString()) + 12);
+            int x = this.contentX() + (this.contentW() - w) / 2;
+            int y = this.contentY() + this.contentH() - 16;
+            g.fill(x, y, x + w, y + 13, 0xD0000000);
+            g.renderOutline(x, y, w, 13, this.messageOk ? 0xFF55AA66 : 0xFFCC4444);
+            this.renderMessage(g, x + 6, y + 3, w - 12);
+         }
+      }
+
+      current.renderTooltips(g, mx, my);
+      int hoverTab = this.tabAt(mx, my);
+      if (hoverTab >= 0) {
+         JournalTab t = this.tabs.get(hoverTab);
+         List<Component> lines = new ArrayList<>();
+         lines.add(t.title());
+         lines.add(t.subtitle().copy().withStyle(ChatFormatting.GRAY));
+         g.renderComponentTooltip(this.font, lines, mx, my);
+      } else if (this.overHelp(mx, my)) {
+         Ui.tooltip(g, this.font, Component.translatable("journal.colonyjournal.help_tip"), mx, my);
+      } else if (Ui.in(mx, my, this.subX(), this.subY(), this.subW(), SUB_H)) {
+         Component sub = current.subtitle();
+         if (this.font.width(sub) > this.subtitleW()) {
+            Ui.tooltip(g, this.font, sub, mx, my);
+         }
+      }
+   }
+
+   // ------------------------------------------------------------------ input
+
+   @Override
+   public boolean mouseClicked(double mx, double my, int button) {
+      if (button == 0) {
+         int hit = this.tabAt(mx, my);
+         if (hit >= 0) {
+            Ui.click();
+            this.selectTab(hit);
+            return true;
+         }
+
+         if (this.overHelp(mx, my)) {
+            Ui.click();
+            this.openGuide(this.tab().guideSection());
+            return true;
+         }
+      }
+
+      if (super.mouseClicked(mx, my, button)) {
          return true;
       }
 
-      if (this.tab == Tab.MAP && button == 0) {
-         List<String> visible = this.visibleNodes();
+      this.setFocused(null);
+      return this.tab().mouseClicked(mx, my, button);
+   }
 
-         for (String id : visible) {
-            int[] pos = this.nodePos(visible, id);
-            if (mouseX >= pos[0] && mouseX < pos[0] + NODE_W && mouseY >= pos[1] && mouseY < pos[1] + NODE_H) {
-               this.selected = id.equals(this.selected) ? null : id;
-               return true;
-            }
-         }
+   @Override
+   public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
+      return this.tab().mouseDragged(mx, my, button, dx, dy) || super.mouseDragged(mx, my, button, dx, dy);
+   }
 
-         this.dragging = mouseY < this.top() + this.panelHeight() - 54;
+   @Override
+   public boolean mouseReleased(double mx, double my, int button) {
+      boolean handled = this.tab().mouseReleased(mx, my, button);
+      return super.mouseReleased(mx, my, button) || handled;
+   }
+
+   @Override
+   public boolean mouseScrolled(double mx, double my, double sx, double sy) {
+      return this.tab().mouseScrolled(mx, my, sx, sy) || super.mouseScrolled(mx, my, sx, sy);
+   }
+
+   @Override
+   public boolean keyPressed(int key, int scan, int modifiers) {
+      if (super.keyPressed(key, scan, modifiers)) {
          return true;
-      } else if (this.tab == Tab.PROBLEMS && button == 0) {
-         int cursor = this.top() + 4 - this.scroll;
+      }
 
-         for (Issue issue : this.report.issues) {
-            int height = this.font.split(issue.text(), this.panelWidth() - 20).size() * 10 + 4;
-            if (mouseY >= cursor && mouseY < cursor + height && issue.focus() != null && BuildingGraph.NODES.containsKey(issue.focus())) {
-               this.selected = issue.focus();
-               this.tab = Tab.MAP;
-               this.rebuildWidgets();
-               return true;
-            }
-
-            cursor += height + 3;
-         }
+      boolean typing = this.getFocused() instanceof EditBox box && box.isFocused();
+      if (!typing && this.minecraft != null && this.minecraft.options.keyInventory.matches(key, scan)) {
+         this.onClose();
+         return true;
       }
 
       return false;
-   }
-
-   @Override
-   public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-      if (this.tab == Tab.MAP && this.dragging) {
-         this.panX += dragX;
-         this.panY += dragY;
-         return true;
-      }
-
-      return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-   }
-
-   @Override
-   public boolean mouseReleased(double mouseX, double mouseY, int button) {
-      this.dragging = false;
-      return super.mouseReleased(mouseX, mouseY, button);
-   }
-
-   @Override
-   public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-      if (this.tab == Tab.MAP) {
-         this.panY += scrollY * 14.0;
-      } else {
-         int content = this.tab == Tab.PROBLEMS ? this.issuesHeight() : this.report.rows.size() * 16 + 8;
-         int max = Math.max(0, content - this.panelHeight());
-         this.scroll = Math.max(0, Math.min(max, this.scroll - (int)(scrollY * 18.0)));
-      }
-
-      return true;
-   }
-
-   @Override
-   public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partial) {
-      this.renderTransparentBackground(g);
    }
 
    @Override

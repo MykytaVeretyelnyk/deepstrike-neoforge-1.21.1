@@ -3,7 +3,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.148'
 }
 
-version = '0.1.0'
+version = '0.5.0'
 group = 'dev.colonyjournal'
 base { archivesName = 'colonyjournal' }
 
@@ -11,8 +11,13 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 neoForge {
     version = '21.1.265'
+    addModdingDependenciesTo(sourceSets.test)
     mods {
         colonyjournal { sourceSet sourceSets.main }
+    }
+    unitTest {
+        enable()
+        testedMod = mods.colonyjournal
     }
     runs {
         server {
@@ -31,6 +36,13 @@ dependencies {
         runtimeOnly files("../libs/${it}.jar")
     }
 }
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test { useJUnitPlatform() }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'

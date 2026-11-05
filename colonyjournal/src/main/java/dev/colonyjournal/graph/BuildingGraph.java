@@ -97,6 +97,98 @@ public final class BuildingGraph {
    /** Buildings every colony needs regardless of the chains above. */
    public static final List<String> BASICS = List.of("townhall", "warehouse", "deliveryman", "residence", "builder", "cook", "hospital", "guardtower");
 
+   /**
+    * One page of the Links tab: a few buildings that belong together.
+    *
+    * @param id       lang key suffix: {@code journal.colonyjournal.chain.<id>} and {@code .<id>.desc}
+    * @param icon     building id whose icon stands for the chain
+    * @param members  the building types shown, in a stable order
+    * @param skip     edges ("from>to") that both ends of which are members but that are not drawn here, because they would close a loop
+    * @param required true when every member must work (the basic buildings), false when absent members are fine
+    */
+   public record Chain(String id, String icon, List<String> members, List<String> skip, boolean required) {
+      /** The edges drawn in this chain: both ends are members and the edge is not skipped. */
+      public List<Edge> edges() {
+         List<Edge> out = new ArrayList<>();
+
+         for (Edge edge : EDGES) {
+            if (this.members.contains(edge.from()) && this.members.contains(edge.to()) && !this.skip.contains(edge.from() + ">" + edge.to())) {
+               out.add(edge);
+            }
+         }
+
+         return out;
+      }
+
+      /** True when the chain has no links and is drawn as a plain grid of tiles. */
+      public boolean plain() {
+         return this.edges().isEmpty();
+      }
+   }
+
+   public static final List<Chain> CHAINS = new ArrayList<>();
+
+   private static void chain(String id, String icon, List<String> skip, boolean required, String... members) {
+      CHAINS.add(new Chain(id, icon, List.of(members), skip, required));
+   }
+
+   static {
+      chain("metal", "smeltery", List.of("blacksmith>miner", "blacksmith>lumberjack"), false, "miner", "lumberjack", "smeltery", "blacksmith", "mechanic");
+      chain("tools", "blacksmith", List.of(), false, "blacksmith", "miner", "lumberjack", "farmer", "fisherman", "builder", "guardtower", "barrackstower");
+      chain("wood", "sawmill", List.of(), false, "lumberjack", "sawmill", "fletcher", "builder", "guardtower");
+      chain("stone", "stonemason", List.of(), false, "miner", "stonemason", "crusher", "sifter", "glassblower", "concretemixer", "builder");
+      chain("crops", "farmer", List.of(), false, "composter", "farmer", "plantation", "beekeeper", "baker", "cook");
+      chain("meat", "cook", List.of(), false, "fisherman", "chickenherder", "cowboy", "swineherder", "shepherd", "rabbithutch", "cook");
+      chain("dyes", "dyer", List.of(), false, "florist", "shepherd", "plantation", "netherworker", "dyer", "alchemist", "builder");
+      chain("basics", "townhall", List.of(), true, BASICS.toArray(new String[0]));
+      chain("other", "library", List.of(), false, "stonesmeltery", "enchanter", "kitchen", "barracks", "archery", "combatacademy", "library", "university", "school", "tavern", "graveyard");
+   }
+
+   /** The chain with the id, or null. */
+   public static Chain chain(String id) {
+      for (Chain chain : CHAINS) {
+         if (chain.id().equals(id)) {
+            return chain;
+         }
+      }
+
+      return null;
+   }
+
+   /** Indexes of the chains in which the link from to is drawn; when none, the chains of the producer. */
+   public static List<Integer> chainsOfLink(String from, String to) {
+      List<Integer> out = new ArrayList<>();
+
+      for (int i = 0; i < CHAINS.size(); i++) {
+         for (Edge edge : CHAINS.get(i).edges()) {
+            if (edge.from().equals(from) && edge.to().equals(to)) {
+               out.add(i);
+               break;
+            }
+         }
+      }
+
+      return out.isEmpty() ? chainsOf(from) : out;
+   }
+
+   /** The one rule for "can this building be shown on the Links tab": it is a member of some chain (basic buildings included). */
+   public static boolean onMap(String buildingId) {
+      return buildingId != null && !chainsOf(buildingId).isEmpty();
+   }
+
+   /** Indexes of the chains that contain the building type, in display order. */
+   public static List<Integer> chainsOf(String buildingId) {
+      List<Integer> out = new ArrayList<>();
+
+      for (int i = 0; i < CHAINS.size(); i++) {
+         if (CHAINS.get(i).members().contains(buildingId)) {
+            out.add(i);
+         }
+      }
+
+      return out;
+   }
+
    private BuildingGraph() {
    }
 }

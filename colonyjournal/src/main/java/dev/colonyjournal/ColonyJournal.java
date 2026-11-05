@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -35,8 +37,11 @@ public final class ColonyJournal {
       }
    });
 
-   public ColonyJournal(IEventBus bus) {
+   public ColonyJournal(IEventBus bus, ModContainer container) {
+      container.registerConfig(ModConfig.Type.SERVER, dev.colonyjournal.economy.EconomyConfig.SPEC);
       ITEMS.register(bus);
+      bus.addListener(dev.colonyjournal.net.Network::register);
+      dev.colonyjournal.server.ServerEvents.init();
       bus.addListener((BuildCreativeModeTabContentsEvent event) -> {
          if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(JOURNAL.get());

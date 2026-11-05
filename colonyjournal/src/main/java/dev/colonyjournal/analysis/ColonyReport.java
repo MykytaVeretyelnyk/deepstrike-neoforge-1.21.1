@@ -47,7 +47,11 @@ public final class ColonyReport {
    public record Link(BuildingGraph.Edge edge, boolean broken, Status producer, Status consumer) {
    }
 
-   public record Issue(Severity severity, Component text, String focus) {
+   /** @param partner for a broken link: the consumer that waits for the focus building, else null */
+   public record Issue(Severity severity, Component text, String focus, String partner) {
+      public Issue(Severity severity, Component text, String focus) {
+         this(severity, text, focus, null);
+      }
    }
 
    public record Row(BlockPos pos, String typeId, Component name, int level, int maxLevel, int workers, int slots, int requests, Status status) {
@@ -168,7 +172,7 @@ public final class ColonyReport {
                new Row(
                   view.getPosition(),
                   id,
-                  view.getBuildingDisplayName().isEmpty() ? nameOf(id) : Component.literal(view.getBuildingDisplayName()),
+                  displayName(view, id),
                   view.getBuildingLevel(),
                   view.getBuildingMaxLevel(),
                   workers,
@@ -187,6 +191,15 @@ public final class ColonyReport {
       report.collectRequestIssues(requests, byType);
       report.issues.sort(Comparator.comparing(Issue::severity));
       return report;
+   }
+
+   /**
+    * MineColonies returns the translation key of the building type from getBuildingDisplayName() when the player gave no
+    * custom name, so the value is either such a key or a free text. translatableWithFallback handles both.
+    */
+   private static Component displayName(IBuildingView view, String id) {
+      String name = view.getBuildingDisplayName();
+      return name == null || name.isEmpty() ? nameOf(id) : Component.translatableWithFallback(name, name);
    }
 
    private static Status statusOf(int level, int slots, int workers) {
@@ -237,7 +250,7 @@ public final class ColonyReport {
                nameOf(edge.from()),
                reason(producer)
             );
-            this.issues.add(new Issue(edge.optional() ? Severity.INFO : Severity.WARN, text, edge.from()));
+            this.issues.add(new Issue(edge.optional() ? Severity.INFO : Severity.WARN, text, edge.from(), edge.to()));
          }
       }
    }
@@ -313,7 +326,7 @@ public final class ColonyReport {
 
       issues.forEach((key, issue) -> {
          int n = counts.get(key);
-         this.issues.add(n > 1 ? new Issue(issue.severity(), Component.empty().append(issue.text()).append(" ×" + n), issue.focus()) : issue);
+         this.issues.add(n > 1 ? new Issue(issue.severity(), Component.empty().append(issue.text()).append(" ×" + n), issue.focus(), issue.partner()) : issue);
       });
    }
 
