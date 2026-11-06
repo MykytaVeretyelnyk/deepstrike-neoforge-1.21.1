@@ -1,0 +1,12 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "deepstrike:rocket_nose",
+    "2 #c:ingots/iron",
+    "3 deepstrike:steel_frame"
+  ],
+  "result": {
+    "item": "deepstrike:fp5_airframe"
+  }
+}

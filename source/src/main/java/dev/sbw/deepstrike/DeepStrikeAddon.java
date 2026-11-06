@@ -9,6 +9,7 @@ import dev.sbw.deepstrike.game.CommandCenterData;
 import dev.sbw.deepstrike.game.CommandDefense;
 import dev.sbw.deepstrike.game.DefenseRuntime;
 import dev.sbw.deepstrike.game.PaintSprayItem;
+import dev.sbw.deepstrike.game.TerminalMissiles;
 import dev.sbw.deepstrike.network.AirRaidSirenNetwork;
 import dev.sbw.deepstrike.network.CommandTabletNetwork;
 import dev.sbw.deepstrike.network.DeepStrikeNetwork;
@@ -18,7 +19,9 @@ import dev.sbw.deepstrike.network.MissileCameraStream;
 import dev.sbw.deepstrike.network.PatriotDefenseNetwork;
 import dev.sbw.deepstrike.network.SpikeNlosNetwork;
 import dev.sbw.deepstrike.network.Su24mNetwork;
+import dev.sbw.deepstrike.network.TerminalMissileNetwork;
 import dev.sbw.deepstrike.network.UnitJournalNetwork;
+import dev.sbw.deepstrike.registry.BFAttachments;
 import dev.sbw.deepstrike.registry.BFBlocks;
 import dev.sbw.deepstrike.registry.BFCreativeTabs;
 import dev.sbw.deepstrike.registry.BFEntities;
@@ -57,6 +60,7 @@ public final class DeepStrikeAddon {
             net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, BFBlocks.MISSILE_ASSEMBLY_BE.get(), (be, side) -> be.itemHandler()
          )
       );
+      BFAttachments.ATTACHMENTS.register(bus);
       BFBlocks.BLOCKS.register(bus);
       BFBlocks.BLOCK_ENTITY_TYPES.register(bus);
       BFItems.ITEMS.register(bus);
@@ -76,6 +80,7 @@ public final class DeepStrikeAddon {
       NeoForge.EVENT_BUS.addListener(CameraTerrainServer::stop);
       NeoForge.EVENT_BUS.addListener(CommandDefense::interact);
       NeoForge.EVENT_BUS.addListener(CommandCenterData::tick);
+      NeoForge.EVENT_BUS.addListener(dev.sbw.deepstrike.game.SbwDamage::detonate);
       NeoForge.EVENT_BUS.addListener(AirDefenseTargets::join);
       NeoForge.EVENT_BUS.addListener(AirDefenseTargets::tick);
       NeoForge.EVENT_BUS.addListener(AirDefenseReview::tick);
@@ -87,6 +92,9 @@ public final class DeepStrikeAddon {
       SpikeNlosNetwork.register();
       Su24mNetwork.register();
       FrequencyNetwork.register();
+      TerminalMissileNetwork.register();
+      NeoForge.EVENT_BUS.addListener(TerminalMissiles::rightClick);
+      NeoForge.EVENT_BUS.addListener(TerminalMissiles::onLoggedOut);
       NeoForge.EVENT_BUS.addListener(ActiveFlights::onJoin);
       NeoForge.EVENT_BUS.addListener(ActiveFlights::tick);
       NeoForge.EVENT_BUS.addListener(IronDomeNetwork::tick);

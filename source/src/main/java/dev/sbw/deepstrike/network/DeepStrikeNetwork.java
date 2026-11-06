@@ -527,17 +527,8 @@ public final class DeepStrikeNetwork {
       static void handle(DeepStrikeNetwork.LaunchMission msg, Context ctx) {
          ServerPlayer player = ctx.getSender();
          if (player != null) {
-            if (!RadioFrequency.valid(msg.frequency)) {
-               player.displayClientMessage(Component.translatable("message.deepstrike.launch.invalid_frequency"), false);
-            } else {
-               if (player.level().getBlockEntity(msg.launcher) instanceof LauncherBlockEntity launcher) {
-                  if (!launcher.fire(player, msg.route, msg.ballistic, msg.frequency, msg.commandId)) {
-                     player.displayClientMessage(Component.translatable("message.deepstrike.launch.rejected", new Object[]{launcher.getLastFireErrorComponent()}), false);
-                  }
-               } else {
-                  player.displayClientMessage(Component.translatable("message.deepstrike.launch.missing"), false);
-               }
-            }
+            // Launcher missiles are launched only through the Skyfront control panel; this legacy packet never fires.
+            player.displayClientMessage(Component.translatable("message.deepstrike.launch.panel_only"), false);
          }
       }
    }

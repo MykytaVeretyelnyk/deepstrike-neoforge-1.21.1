@@ -1,0 +1,15 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "deepstrike:optical_seeker",
+    "2 deepstrike:guidance_core",
+    "2 deepstrike:aerodynamic_fins",
+    "deepstrike:reinforced_casing",
+    "2 deepstrike:steel_frame",
+    "deepstrike:rocket_engine"
+  ],
+  "result": {
+    "item": "deepstrike:spike_nlos_airframe"
+  }
+}

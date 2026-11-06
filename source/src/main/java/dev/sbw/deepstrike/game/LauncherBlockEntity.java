@@ -159,6 +159,11 @@ public final class LauncherBlockEntity extends BlockEntity implements Container 
       return this.publicAccess || this.ownerId == null || this.ownerId.equals(player.getUUID()) || player.hasPermissions(2);
    }
 
+   /** True when anybody may operate this launcher (public or without an owner). */
+   public boolean openAccess() {
+      return this.publicAccess || this.ownerId == null;
+   }
+
    public boolean platformFueled() {
       return PeacekeeperFuel.tfmgPresent() ? this.platformFuelMask == 7 : this.fallbackFuelBuckets == 3;
    }
@@ -271,6 +276,7 @@ public final class LauncherBlockEntity extends BlockEntity implements Container 
             if (!stack.isEmpty()) {
                stack.setCount(1);
                this.loadedAt[slot] = this.level == null ? 0L : this.level.getGameTime();
+               TerminalMissiles.linkLauncher(this.level, this.worldPosition, stack);
             }
 
             this.changed();
@@ -404,6 +410,10 @@ public final class LauncherBlockEntity extends BlockEntity implements Container 
          if (!this.slotLocked(i) && this.slot(i).isEmpty() && this.canPlaceItem(i, stack)) {
             this.ammunition.set(i, stack.copyWithCount(1));
             this.loadedAt[i] = this.level.getGameTime();
+            if (player instanceof ServerPlayer operator && this.canOperate(operator)) {
+               TerminalMissiles.linkLauncher(this.level, this.worldPosition, stack, operator);
+            }
+
             if (!player.getAbilities().instabuild) {
                stack.shrink(1);
             }

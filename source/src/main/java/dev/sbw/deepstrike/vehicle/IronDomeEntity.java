@@ -8,6 +8,7 @@ import dev.sbw.deepstrike.game.AirDefenseTargets;
 import dev.sbw.deepstrike.game.FlightCollision;
 import dev.sbw.deepstrike.game.FlightUnits;
 import dev.sbw.deepstrike.game.GuidedMissileEntity;
+import dev.sbw.deepstrike.game.MissileKind;
 import dev.sbw.deepstrike.game.LaunchJournal;
 import dev.sbw.deepstrike.game.MissileLaunchEffects;
 import dev.sbw.deepstrike.game.PatriotInterceptorEntity;
@@ -212,7 +213,9 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
          && AirDefenseTargets.tamirTarget(target)
          && !(target.distanceToSqr(this) > 2.025E7)
          && (!AirDefenseTargets.aircraft(target) || this.aircraftTargets)
-         && !(target instanceof GuidedMissileEntity missile && this.isFriendly(missile))) {
+         && !(target instanceof GuidedMissileEntity missile && this.isFriendly(missile))
+         && AirDefenseTargets.airborne(server, target)
+         && !this.launchPathBlocked(server)) {
          Vec3 impact = target instanceof GuidedMissileEntity missilex
             ? predictImpactPoint(missilex)
             : target.position().add(target.getDeltaMovement().scale(50.0));
@@ -225,6 +228,36 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
          return false;
       }
    }
+
+   /** Length of the tube exit corridor that must be free of blocks for a Tamir to leave the canister. */
+   private static final double LAUNCH_CLEARANCE = 8.0;
+
+   /**
+    * True when a block (or terrain that is not loaded yet) sits in the exit corridor of the next canister cell, so
+    * a Tamir launched now would hit it. Used both to skip the battery for automatic fire and to refuse manual fire.
+    */
+   public boolean launchPathBlocked(ServerLevel server) {
+      int cell = this.nextLaunchCell();
+      if (cell < 0) {
+         return true;
+      } else {
+         // The corridor depends only on this battery and the next cell, so one trace per tick serves every target of the scan.
+         long now = server.getGameTime();
+         if (this.blockedCheckTick != now || this.blockedCheckCell != cell) {
+            Vec3 muzzle = this.calculateCellMuzzle(cell);
+            Vec3 direction = this.calculateCellDirection();
+            this.blockedCheckResult = !FlightCollision.knownClear(server, muzzle, muzzle.add(direction.scale(LAUNCH_CLEARANCE)), this);
+            this.blockedCheckTick = now;
+            this.blockedCheckCell = cell;
+         }
+
+         return this.blockedCheckResult;
+      }
+   }
+
+   private long blockedCheckTick = Long.MIN_VALUE;
+   private int blockedCheckCell = -1;
+   private boolean blockedCheckResult;
 
    double engagementScore(ServerLevel server, Vec3 aim) {
       Vec3 muzzle = this.calculateCellMuzzle(20 - this.getReadyTamir());
@@ -349,7 +382,7 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
          this.cachedContacts.clear();
 
          for (Entity e : server.getAllEntities()) {
-            if (AirDefenseTargets.tamirTarget(e)) {
+            if (AirDefenseTargets.tamirTarget(e) && AirDefenseTargets.airborne(server, e)) {
                double distSqr = e.distanceToSqr(this);
                if (!(distSqr > 6.4E7) && RadarHorizon.visible(e, this)) {
                   Vec3 impact = e instanceof GuidedMissileEntity guided ? predictImpactPoint(guided) : e.position().add(e.getDeltaMovement().scale(50.0));
@@ -402,10 +435,52 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
       return new Vec3(d.x, d.y, d.z).normalize();
    }
 
-   private PatriotInterceptorEntity launchTamir(ServerLevel server, Entity target, boolean manual) {
-      if (this.getReadyTamir() > 0 && !this.isReloading()) {
+   /** Chance of a Tamir hit on a ballistic missile (LGM-118 Peacekeeper): the Dome is not built for this class of target. */
+   private static final double BALLISTIC_CHANCE = 0.05;
+   /** Chance of a Tamir hit on any other guided missile (FP-5, JAGM, Storm Shadow, Spike NLOS). */
+   private static final double MISSILE_CHANCE = 0.30;
+   /** Chance range of a Tamir hit on a drone. */
+   private static final double DRONE_CHANCE_MIN = 0.90;
+   private static final double DRONE_CHANCE_SPAN = 0.07;
+
+   private static boolean ballistic(Entity target) {
+      return target instanceof GuidedMissileEntity missile && missile.kind() == MissileKind.PEACEKEEPER;
+   }
+
+   /**
+    * Hit probability of one Tamir by target class: drones 90-97%, guided missiles 30%, ballistic missiles (Peacekeeper) 5%.
+    * Everything else (aircraft) keeps the old figures: 90-97% for a manual launch and 75-80% for an automatic one.
+    */
+   private double interceptChance(ServerLevel server, Entity target, boolean manual) {
+      if (ballistic(target)) {
+         return BALLISTIC_CHANCE;
+      } else if (target instanceof GuidedMissileEntity) {
+         return MISSILE_CHANCE;
+      } else if (AirDefenseTargets.drone(target)) {
+         return DRONE_CHANCE_MIN + server.random.nextDouble() * DRONE_CHANCE_SPAN;
+      } else {
          double chance = manual ? 0.9 + server.random.nextDouble() * 0.07 : 0.75 + server.random.nextDouble() * 0.05;
-         chance = Math.max(0.2, chance);
+         return Math.max(0.2, chance);
+      }
+   }
+
+   /** The chance as shown in the launch journal. */
+   private static String interceptChanceText(Entity target, boolean manual) {
+      if (ballistic(target)) {
+         return "5";
+      } else if (target instanceof GuidedMissileEntity) {
+         return "30";
+      } else if (AirDefenseTargets.drone(target)) {
+         return "90–97";
+      } else {
+         return manual ? "90–97" : "75–80";
+      }
+   }
+
+   private PatriotInterceptorEntity launchTamir(ServerLevel server, Entity target, boolean manual) {
+      if (this.getReadyTamir() > 0 && !this.isReloading() && !this.launchPathBlocked(server)) {
+         double chance = this.interceptChance(server, target, manual);
+         String chanceText = interceptChanceText(target, manual);
          boolean hit = server.random.nextDouble() < chance;
          int previousReady = this.getReadyTamir();
          int previousTorn = (Integer)this.entityData.get(TORN);
@@ -427,7 +502,7 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
                this.position(),
                "Tamir",
                AirDefenseTargets.aim(target),
-               Component.translatable(manual ? "journal.deepstrike.manual_chance" : "journal.deepstrike.auto_chance", new Object[]{manual ? "90–97" : "75–80"})
+               Component.translatable(manual ? "journal.deepstrike.manual_chance" : "journal.deepstrike.auto_chance", new Object[]{chanceText})
             );
             MissileLaunchEffects.spawnLaunchPlume(server, muzzle, forward);
             server.playSound(null, muzzle.x, muzzle.y, muzzle.z, (SoundEvent)BFSounds.PATRIOT_LAUNCH.get(), SoundSource.HOSTILE, 3.8F, 1.15F);
@@ -451,6 +526,10 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.range"));
          } else if (this.getReadyTamir() <= 0) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.empty"));
+         } else if (!AirDefenseTargets.airborne(server, target)) {
+            player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.grounded"));
+         } else if (this.launchPathBlocked(server)) {
+            player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.blocked"));
          } else {
             if (IronDomeDefenseCoordinator.fireManual(server, this, target)) {
                player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.manual_launch"));

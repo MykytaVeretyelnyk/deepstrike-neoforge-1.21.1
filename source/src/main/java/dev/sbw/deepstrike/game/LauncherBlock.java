@@ -1,7 +1,6 @@
 package dev.sbw.deepstrike.game;
 
 import dev.sbw.deepstrike.compat.NbtCompat;
-import dev.sbw.deepstrike.client.DeepStrikeMapScreen;
 import dev.sbw.deepstrike.menu.LauncherMenu;
 import dev.sbw.deepstrike.registry.BFBlocks;
 import dev.sbw.deepstrike.registry.BFItems;
@@ -136,6 +135,8 @@ public final class LauncherBlock extends BaseEntityBlock {
       super.setPlacedBy(level, pos, state, placer, item);
       if (level.getBlockEntity(pos) instanceof LauncherBlockEntity launcher) {
          launcher.placed(placer, item);
+         // after placed(): a fresh launcher already has the placer as its owner
+         TerminalMissiles.linkLauncher(level, pos, item, placer instanceof ServerPlayer operator ? operator : null);
       }
    }
 
@@ -170,8 +171,12 @@ public final class LauncherBlock extends BaseEntityBlock {
 
             return InteractionResult.sidedSuccess(level.isClientSide);
          } else if (held.is((Item)BFItems.DEEPSTRIKE.get())) {
-            if (level.isClientSide) {
-               DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> DeepStrikeMapScreen.open(pos, (Direction)state.getValue(FACING), this.family));
+            if (!level.isClientSide && player instanceof ServerPlayer sp) {
+               NbtCompat.update(held, t -> t.putLong("BoundLauncher", pos.asLong()));
+               sp.displayClientMessage(
+                  Component.translatable("message.deepstrike.laptop.bound", new Object[]{this.getName(), pos.getX(), pos.getY(), pos.getZ()}), true
+               );
+               sp.displayClientMessage(Component.translatable("message.deepstrike.laptop.use_panel"), false);
             }
 
             return InteractionResult.sidedSuccess(level.isClientSide);

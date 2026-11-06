@@ -1,0 +1,15 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "deepstrike:rocket_nose",
+    "deepstrike:guidance_core",
+    "2 deepstrike:aerodynamic_fins",
+    "deepstrike:reinforced_casing",
+    "2 deepstrike:steel_frame",
+    "minecraft:iron_block"
+  ],
+  "result": {
+    "item": "deepstrike:storm_shadow_airframe"
+  }
+}

@@ -84,6 +84,11 @@ public final class AirDefenseTargets {
       }
    }
 
+   /** A Superb Warfare drone (quadcopter, FPV, loitering munition): small, slow and easy for a Tamir to catch. */
+   public static boolean drone(Entity entity) {
+      return entity instanceof VehicleEntity vehicle && vehicle.isAlive() && vehicle.getVehicleType() == VehicleType.DRONE;
+   }
+
    /** Radar contact kind used for Project: Explosive ordnance. */
    public static final int EXPLOSIVE_KIND = 102;
 
@@ -106,6 +111,22 @@ public final class AirDefenseTargets {
       return entity != null
          && entity.isAlive()
          && (entity instanceof GuidedMissileEntity missile ? !missile.isIntercepted() : aircraft(entity) || explosive(entity));
+   }
+
+   /** A target this close above solid ground (below its bounding box) counts as sitting on the ground. */
+   private static final double GROUND_CLEARANCE = 1.25;
+
+   /**
+    * True when the target is in the air. Parked, landed or crashed aircraft and missiles lying on the ground are not
+    * airborne: the Iron Dome does not waste Tamirs on them.
+    */
+   public static boolean airborne(ServerLevel level, Entity entity) {
+      if (entity == null || entity.onGround()) {
+         return false;
+      } else {
+         Vec3 feet = new Vec3(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
+         return FlightCollision.clip(level, feet, feet.add(0.0, -GROUND_CLEARANCE, 0.0), entity).getType() == net.minecraft.world.phys.HitResult.Type.MISS;
+      }
    }
 
    /** Targets the Iron Dome (Tamir) is allowed to engage: everything Patriot sees except Project: Explosive ordnance. */

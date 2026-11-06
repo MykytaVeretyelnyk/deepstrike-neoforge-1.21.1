@@ -66,6 +66,36 @@ public final class MissileExplosion extends Explosion {
       this.center = missile.impactPosition();
    }
 
+   private boolean vanillaPhase;
+
+   GuidedMissileEntity missile() {
+      return this.missile;
+   }
+
+   /** True only while the vanilla Explosion.explode() entity pass runs; see SbwDamage.detonate. */
+   boolean vanillaPhase() {
+      return this.vanillaPhase;
+   }
+
+   private void deepstrike$vanillaExplode() {
+      this.vanillaPhase = true;
+
+      try {
+         super.explode();
+      } finally {
+         this.vanillaPhase = false;
+      }
+   }
+
+   /** Superb Warfare vehicles go through SBW's damage pipeline (armor modifiers, attribution); everything else keeps the vanilla explosion damage. */
+   private void deepstrike$hurt(Entity target, float amount) {
+      if (target instanceof com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity vehicle) {
+         SbwDamage.hurt(this.world, this.missile, vehicle, amount);
+      } else {
+         target.hurt(this.deepstrike$damageSource(), amount);
+      }
+   }
+
    private net.minecraft.world.damagesource.DamageSource deepstrike$damageSource() {
       return this.world.damageSources().explosion(this.getDirectSourceEntity(), this.getIndirectSourceEntity());
    }
@@ -100,10 +130,10 @@ public final class MissileExplosion extends Explosion {
       } else if ("none".equals(this.warhead)) {
          this.addKineticImpact();
       } else if ("shaped_charge".equals(this.warhead)) {
-         super.explode();
+         this.deepstrike$vanillaExplode();
          this.addShapedChargeJet();
       } else {
-         super.explode();
+         this.deepstrike$vanillaExplode();
          this.addCircularCrater();
          this.addScatteredStructuralDamage();
          this.addGlassDamage();
@@ -147,7 +177,7 @@ public final class MissileExplosion extends Explosion {
          double along = offset.dot(direction);
          double lateral = offset.subtract(direction.scale(along)).length();
          if (along >= -1.5 && along <= 12.0 && lateral < 2.1) {
-            e.hurt(this.deepstrike$damageSource(), 170.0F);
+            this.deepstrike$hurt(e, 170.0F);
          }
       }
    }
@@ -178,7 +208,7 @@ public final class MissileExplosion extends Explosion {
       AABB impactBox = new AABB(this.center, this.center).inflate(4.0);
 
       for (Entity e : this.world.getEntities(this.missile, impactBox, Entity::isAlive)) {
-         e.hurt(this.deepstrike$damageSource(), 45.0F);
+         this.deepstrike$hurt(e, 45.0F);
       }
 
       this.world.playSound(null, this.center.x, this.center.y, this.center.z, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 2.5F, 0.7F);
@@ -326,7 +356,7 @@ public final class MissileExplosion extends Explosion {
          AABB subBox = new AABB(sx - damageRadius, sy - 1, sz - damageRadius, sx + damageRadius, sy + damageRadius, sz + damageRadius);
 
          for (Entity e : this.world.getEntities(this.missile, subBox, Entity::isAlive)) {
-            e.hurt(this.deepstrike$damageSource(), peacekeeper ? 32.0F : 22.0F);
+            this.deepstrike$hurt(e, peacekeeper ? 32.0F : 22.0F);
          }
 
          this.world.sendParticles((SimpleParticleType)BFParticles.BLAST_SMOKE.get(), sx + 0.5, sy + 0.5, sz + 0.5, 1, 0.1, 0.1, 0.1, 0.05);
@@ -341,7 +371,7 @@ public final class MissileExplosion extends Explosion {
          double radius = this.kind.damageRadius * 1.8;
          if (!(distance >= radius) && this.hasLineOfSight(entity)) {
             double falloff = 1.0 - distance / radius;
-            entity.hurt(this.deepstrike$damageSource(), (float)(this.kind.peakDamage * 2.0 * falloff));
+            this.deepstrike$hurt(entity, (float)(this.kind.peakDamage * 2.0 * falloff));
             Vec3 away = entity.position().subtract(this.center);
             if (away.lengthSqr() > 1.0E-6) {
                entity.setDeltaMovement(entity.getDeltaMovement().add(away.normalize().scale(4.0 * falloff)));
@@ -485,7 +515,7 @@ public final class MissileExplosion extends Explosion {
             }
 
             if (damage > 0.0F) {
-               entity.hurt(this.deepstrike$damageSource(), damage);
+               this.deepstrike$hurt(entity, damage);
             }
 
             Vec3 away = entity.position().subtract(this.center).add(0.0, 0.25, 0.0);

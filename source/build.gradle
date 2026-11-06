@@ -37,6 +37,8 @@ dependencies {
     compileOnly files('../libs/xaeroworldmap.jar')
     compileOnly files('../libs/SimpleBedrockModel-2.5.1.1-neoforge-mc1.21.1.jar')
     compileOnly files('../libs/mae-1.1.4.jar')
+    compileOnly files('../libs/skyfront-1.21.1-1.5.0.jar')
+    runtimeOnly files('../libs/skyfront-1.21.1-1.5.0.jar')
     compileOnly files('../libs/xaerolib-neoforge-1.21.1-1.7.3.jar')
 }
 
@@ -45,3 +47,27 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-Xmaxerrs' << '10000'
 }
 
+// Jar-in-jar: nest Skyfront so the player needs a single jar.
+def skyfrontJar = file('../libs/skyfront-1.21.1-1.5.0.jar')
+def jarJarDir = layout.buildDirectory.dir('jarjar-staging')
+
+def genJarJar = tasks.register('generateJarJarMetadata') {
+    def outDir = jarJarDir
+    inputs.file(skyfrontJar)
+    outputs.dir(outDir)
+    doLast {
+        def root = outDir.get().asFile
+        def nested = new File(root, 'META-INF/jarjar')
+        nested.mkdirs()
+        java.nio.file.Files.copy(skyfrontJar.toPath(), new File(nested, 'skyfront-1.21.1-1.5.0.jar').toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        new File(nested, 'metadata.json').text = '{"jars":[{"identifier":{"group":"dev.krutlexik","artifact":"skyfront"},' +
+                '"version":{"range":"[1.5.0,)","artifactVersion":"1.5.0"},' +
+                '"path":"META-INF/jarjar/skyfront-1.21.1-1.5.0.jar","isObfuscated":false}]}'
+    }
+}
+
+tasks.named('jar') {
+    dependsOn genJarJar
+    from(jarJarDir)
+}

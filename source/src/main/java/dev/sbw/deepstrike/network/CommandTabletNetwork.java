@@ -38,6 +38,11 @@ public final class CommandTabletNetwork {
       return p.getMainHandItem().is((Item)BFItems.JAGM_CAMERA_TABLET.get()) || p.getOffhandItem().is((Item)BFItems.JAGM_CAMERA_TABLET.get());
    }
 
+   /** Actions of the tablet that are available only in the Skyfront control panel. Disarm (emergency stop) is deliberately not listed. */
+   public static boolean panelOnly(String action) {
+      return "save".equals(action) || "arm".equals(action) || "launch".equals(action);
+   }
+
    public static void watch(UUID missile, boolean active) {
       CHANNEL.sendToServer(new CommandTabletNetwork.CameraWatch(missile, active));
    }
@@ -104,7 +109,7 @@ public final class CommandTabletNetwork {
                         seen.remove(seen.iterator().next());
                      }
 
-                     String error = m.payload == null ? "action" : data.action(p, m.action, m.payload);
+                     String error = m.payload == null ? "action" : (panelOnly(m.action) ? "panel_only" : data.action(p, m.action, m.payload));
                      if (!m.action.equals("refresh")) {
                         errors.put(p, error);
                      }

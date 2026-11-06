@@ -1,0 +1,14 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "2 minecraft:iron_block",
+    "deepstrike:launcher_frame",
+    "2 deepstrike:steel_frame",
+    "deepstrike:defense_controller",
+    "3 minecraft:smooth_stone"
+  ],
+  "result": {
+    "item": "deepstrike:peacekeeper_platform"
+  }
+}

@@ -281,6 +281,15 @@ public final class CommandCenterData extends SavedData {
    }
 
    public String bind(ServerPlayer player, LauncherBlockEntity be) {
+      return this.bind(player, be, true);
+   }
+
+   /** Binds a launcher from a Skyfront terminal: the terminal reach check done by the caller replaces the 8-block distance check. */
+   public String bindFromTerminal(ServerPlayer player, LauncherBlockEntity be) {
+      return this.bind(player, be, false);
+   }
+
+   private String bind(ServerPlayer player, LauncherBlockEntity be, boolean checkDistance) {
       CompoundTag n = this.session(player);
       if (n == null) {
          String err = this.login(player, player.getGameProfile().getName());
@@ -292,7 +301,7 @@ public final class CommandCenterData extends SavedData {
       }
 
       if (allowed(n, player.getUUID(), 2) && be.canBindCommand(player)) {
-         if (be.getLevel() == player.level() && !(player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 64.0)) {
+         if (be.getLevel() == player.level() && (!checkDistance || !(player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 64.0))) {
             for (CompoundTag other : this.networks.values()) {
                for (Tag raw : units(other)) {
                   if (((CompoundTag)raw).getUUID("Id").equals(be.journalId())) {

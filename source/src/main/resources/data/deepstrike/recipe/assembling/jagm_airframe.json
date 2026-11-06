@@ -1,0 +1,14 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "deepstrike:optical_seeker",
+    "deepstrike:steel_frame",
+    "2 deepstrike:aerodynamic_fins",
+    "deepstrike:control_chip",
+    "minecraft:iron_block"
+  ],
+  "result": {
+    "item": "deepstrike:jagm_airframe"
+  }
+}

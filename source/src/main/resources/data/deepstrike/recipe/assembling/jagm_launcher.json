@@ -1,0 +1,14 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "3 #c:ingots/iron",
+    "2 minecraft:lever",
+    "deepstrike:launcher_frame",
+    "2 minecraft:smooth_stone",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "item": "deepstrike:jagm_launcher"
+  }
+}

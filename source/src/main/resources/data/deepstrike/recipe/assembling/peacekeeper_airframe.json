@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "2 deepstrike:reentry_bus",
+    "deepstrike:rocket_nose",
+    "deepstrike:stage_one",
+    "deepstrike:stage_two",
+    "deepstrike:stage_three",
+    "2 deepstrike:reinforced_casing",
+    "deepstrike:guidance_core"
+  ],
+  "result": {
+    "item": "deepstrike:peacekeeper_airframe"
+  }
+}

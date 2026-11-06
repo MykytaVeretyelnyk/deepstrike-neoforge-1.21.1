@@ -146,7 +146,7 @@ public final class CommandTabletScreen extends Screen {
             this.filter = (EditBox)this.addRenderableWidget(new InstrumentField(this.font, 40, 116, 320, 24, tr("filter")));
             this.filter.setMaxLength(32);
             this.filter.setHint(tr("filter"));
-            this.button("route_selected", this.width - 300, this.height - 66, 260, () -> this.editTask(null)).active = this.role() >= 1;
+            this.button("route_selected", this.width - 300, this.height - 66, 260, () -> this.editTask(null)).active = false;
             this.button("map", this.width - 300, 116, 260, () -> {
                List<CompoundTag> us = this.visibleUnits();
                if (!us.isEmpty()) {
@@ -175,11 +175,11 @@ public final class CommandTabletScreen extends Screen {
             int bx = 40;
 
             for (String act : List.of("arm", "launch", "disarm")) {
-               this.button(act, bx, this.height - 66, 150, () -> this.action(act, this.taskPayload())).active = this.role() >= 1;
+               this.button(act, bx, this.height - 66, 150, () -> this.action(act, this.taskPayload())).active = act.equals("disarm") && this.role() >= 1;
                bx += 160;
             }
 
-            this.button("edit", bx, this.height - 66, 120, () -> this.editTask(this.currentTask())).active = this.role() >= 1;
+            this.button("edit", bx, this.height - 66, 120, () -> this.editTask(this.currentTask())).active = false;
             bx += 130;
             this.button("relay_select", bx, this.height - 66, 180, () -> this.action("select_relay", this.taskPayload())).active = this.role() >= 2;
             this.button("details", 40, this.height - 104, 150, () -> {
@@ -196,7 +196,7 @@ public final class CommandTabletScreen extends Screen {
                   copy.putString("Name", tr("copy_name", t.getString("Name")).getString());
                   this.minecraft.setScreen(new CommandTaskScreen(this, this.network(), copy, Set.of()));
                }
-            }).active = this.role() >= 1;
+            }).active = false;
             this.button("delete", 310, this.height - 104, 126, () -> this.action("delete", this.taskPayload())).active = this.role() >= 2;
          } else if (this.tab.equals("access")) {
             this.nickname = (EditBox)this.addRenderableWidget(new InstrumentField(this.font, 40, 124, 260, 24, tr("nickname")));
@@ -413,6 +413,12 @@ public final class CommandTabletScreen extends Screen {
 
          if (this.tab.equals("units")) {
             this.label(g, tr("selected", this.selected.size()).getString(), 380, 122, -5196890);
+         }
+
+         if (this.tab.equals("tasks") || this.tab.equals("units")) {
+            this.label(
+               g, Component.translatable("gui.deepstrike.panel.tablet_notice").getString(), 40, this.tab.equals("tasks") ? this.height - 142 : this.height - 78, -1000096
+            );
          }
 
          if (!this.error.isEmpty()) {

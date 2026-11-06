@@ -672,6 +672,11 @@ public final class GuidedMissileEntity extends Entity implements GeoEntity {
       return this.ownerId;
    }
 
+   /** Master block of the launcher this missile was fired from, or null (used to match a linked Superb Warfare monitor). */
+   public BlockPos launcherPos() {
+      return this.launchMaster;
+   }
+
    public boolean cameraAvailable() {
       return (this.kind() == MissileKind.JAGM || this.kind() == MissileKind.SPIKE_NLOS || this.hasCamera()) && this.isAlive();
    }
