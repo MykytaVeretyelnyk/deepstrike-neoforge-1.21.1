@@ -23,6 +23,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 
 public final class CommandDefense {
@@ -156,8 +157,7 @@ public final class CommandDefense {
 
                   Entity missile = p.serverLevel().getEntity(target);
                   if (missile != null && !(dome.distanceToSqr(missile) > 2.025E7)) {
-                     dome.fireManual(target, p);
-                     return "";
+                     return dome.fireManual(target, p) ? "" : "defense_launch";
                   }
 
                   return "range";
@@ -206,9 +206,26 @@ public final class CommandDefense {
             radar.putInt("Ready0", dome.getReadyTamir());
             radar.putBoolean("Enabled", dome.isAutoDefense());
             radar.putDouble("Range", 8000.0);
+            radar.putInt("ReloadTicks", dome.getReloadTicks());
+            radar.putInt("Reserve0", dome.getReserveTamir());
+            radar.putInt("Reserve1", 0);
+            radar.putBoolean("Aircraft", dome.aircraftTargets());
+            radar.putInt("ZoneX", (int)Math.round(dome.getZoneX()));
+            radar.putInt("ZoneZ", (int)Math.round(dome.getZoneZ()));
+            radar.putInt("ZoneR", (int)Math.round(dome.getZoneRadius()));
 
             for (IronDomeNetwork.Contact c : dome.scanContacts(p.serverLevel())) {
-               contacts.add(contact(c.id(), c.x(), c.y(), c.z(), c.speedKmh(), c.kind(), c.friendly()));
+               CompoundTag ct = contact(c.id(), c.x(), c.y(), c.z(), c.speedKmh(), c.kind(), c.friendly());
+               ct.putInt("Alt", (int)c.altitude());
+               ct.putInt("Status", c.status());
+               boolean known = RadarDisclosure.impactKnown(c.id());
+               ct.putBoolean("HasImpact", known);
+               if (known) {
+                  ct.putInt("ImpactX", (int)Math.round(c.impactX()));
+                  ct.putInt("ImpactZ", (int)Math.round(c.impactZ()));
+               }
+
+               contacts.add(ct);
                if (contacts.size() >= 128) {
                   break;
                }
@@ -220,9 +237,16 @@ public final class CommandDefense {
             radar.putBoolean("Enabled", truck.isDeployed());
             radar.putBoolean("RadarConnected", truck.radarConnected());
             radar.putDouble("Range", truck.radarRange());
+            radar.putInt("ReloadTicks", truck.getReloadTicks());
+            radar.putInt("Reserve0", 0);
+            radar.putInt("Reserve1", 0);
+            radar.putBoolean("Aircraft", false);
+            radar.putInt("ZoneX", 0);
+            radar.putInt("ZoneZ", 0);
+            radar.putInt("ZoneR", 0);
 
             for (PatriotTruckEntity.RadarContact cx : truck.scan(p.serverLevel())) {
-               contacts.add(contact(cx.id(), cx.x(), cx.y(), cx.z(), cx.speedKmh(), cx.kind(), cx.friendly()));
+               contacts.add(patriotContact(p, truck, cx));
                if (contacts.size() >= 128) {
                   break;
                }
@@ -250,7 +274,7 @@ public final class CommandDefense {
                   if (bound) {
                      for (PatriotTruckEntity.RadarContact cxx : truck.scan(p.serverLevel())) {
                         if (seen.add(cxx.id()) && contacts.size() < 128) {
-                           contacts.add(contact(cxx.id(), cxx.x(), cxx.y(), cxx.z(), cxx.speedKmh(), cxx.kind(), cxx.friendly()));
+                           contacts.add(patriotContact(p, truck, cxx));
                         }
                      }
                   }
@@ -273,6 +297,24 @@ public final class CommandDefense {
          result.put("Radar", radar);
          return result;
       }
+   }
+
+   private static CompoundTag patriotContact(ServerPlayer p, PatriotTruckEntity truck, PatriotTruckEntity.RadarContact c) {
+      CompoundTag ct = contact(c.id(), c.x(), c.y(), c.z(), c.speedKmh(), RadarDisclosure.model(c.id(), c.kind()), c.friendly());
+      ct.putInt("Alt", (int)c.altitude());
+      ct.putInt("Status", 0);
+      Entity entity = p.serverLevel().getEntity(c.id());
+      boolean known = entity != null && RadarDisclosure.impactKnown(c.id());
+      ct.putBoolean("HasImpact", known);
+      if (known) {
+         Vec3 impact = entity instanceof GuidedMissileEntity missile
+            ? IronDomeEntity.predictImpactPoint(missile)
+            : entity.position().add(entity.getDeltaMovement().scale(50.0));
+         ct.putInt("ImpactX", (int)Math.round(impact.x));
+         ct.putInt("ImpactZ", (int)Math.round(impact.z));
+      }
+
+      return ct;
    }
 
    private static CompoundTag contact(UUID id, double x, double y, double z, double speed, int kind, boolean friendly) {

@@ -513,28 +513,38 @@ public class IronDomeEntity extends DeepStrikeVehicleEntity {
       }
    }
 
-   public void fireManual(UUID targetId, ServerPlayer player) {
+   public boolean fireManual(UUID targetId, ServerPlayer player) {
       if (this.level() instanceof ServerLevel server) {
          Entity target = server.getEntity(targetId);
          if (AirDefenseTargets.explosive(target)) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.too_heavy"));
+            return false;
          } else if (!AirDefenseTargets.tamirTarget(target)) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.lost"));
+            return false;
          } else if (AirDefenseTargets.aircraft(target) && !this.aircraftTargets) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.aircraft"));
+            return false;
          } else if (target.distanceToSqr(this) > 2.025E7) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.range"));
+            return false;
          } else if (this.getReadyTamir() <= 0) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.empty"));
+            return false;
          } else if (!AirDefenseTargets.airborne(server, target)) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.grounded"));
+            return false;
          } else if (this.launchPathBlocked(server)) {
             player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.blocked"));
+            return false;
+         } else if (IronDomeDefenseCoordinator.fireManual(server, this, target)) {
+            player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.manual_launch"));
+            return true;
          } else {
-            if (IronDomeDefenseCoordinator.fireManual(server, this, target)) {
-               player.sendSystemMessage(Component.translatable("message.deepstrike.iron_dome.manual_launch"));
-            }
+            return false;
          }
+      } else {
+         return false;
       }
    }
 

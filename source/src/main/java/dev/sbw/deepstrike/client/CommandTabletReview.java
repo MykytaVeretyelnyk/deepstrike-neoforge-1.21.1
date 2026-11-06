@@ -397,8 +397,8 @@ final class CommandTabletReview {
                   try {
                      ServerPlayer p = (ServerPlayer)mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);
                      IronDomeEntity dome = (IronDomeEntity)p.serverLevel().getEntity(defenseId);
-                     if (dome.getReadyTamir() != 19) {
-                        throw new IllegalStateException("Remote PVO/duplicate command spent wrong count: " + dome.getReadyTamir());
+                     if (dome.getReadyTamir() != 20) {
+                        throw new IllegalStateException("Tablet defense_fire must be panel-only and spend nothing: " + dome.getReadyTamir());
                      }
 
                      defenseVerified = true;

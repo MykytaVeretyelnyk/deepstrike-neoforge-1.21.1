@@ -14,14 +14,14 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 public final class PanelGateTests {
    @GameTest(template = "empty")
    public static void tabletPanelOnlyGate(GameTestHelper helper) {
-      for (String gated : new String[]{"save", "arm", "launch"}) {
+      for (String gated : new String[]{"save", "arm", "launch", "defense_fire", "defense_reload", "defense_toggle"}) {
          if (!CommandTabletNetwork.panelOnly(gated)) {
             helper.fail("tablet action must be panel-only: " + gated);
             return;
          }
       }
 
-      for (String open : new String[]{"disarm", "refresh", "login", "camera", "delete", "member", "rename", "unbind", "select_relay", "defense_launch", ""}) {
+      for (String open : new String[]{"disarm", "refresh", "login", "camera", "delete", "member", "defense_select", "rename", "unbind", "select_relay", "defense_launch", ""}) {
          if (CommandTabletNetwork.panelOnly(open)) {
             helper.fail("tablet action must stay available: " + open);
             return;
@@ -39,14 +39,14 @@ public final class PanelGateTests {
 
    @GameTest(template = "empty")
    public static void panelActionWhitelist(GameTestHelper helper) {
-      for (String ok : new String[]{"login", "refresh", "save", "arm", "disarm", "launch", "delete", "member", "camera", "bind_unit"}) {
+      for (String ok : new String[]{"login", "refresh", "save", "arm", "disarm", "launch", "delete", "member", "camera", "bind_unit", "defense_select", "defense_reload", "defense_toggle", "defense_fire"}) {
          if (!TerminalMissiles.panelAction(ok)) {
             helper.fail("panel action must be allowed: " + ok);
             return;
          }
       }
 
-      for (String bad : new String[]{"select_relay", "defense_select", "defense_launch", "rename", "unbind", "", "LAUNCH", "launch "}) {
+      for (String bad : new String[]{"select_relay", "defense_launch", "rename", "unbind", "", "LAUNCH", "launch "}) {
          if (TerminalMissiles.panelAction(bad)) {
             helper.fail("panel action must be rejected: " + bad);
             return;

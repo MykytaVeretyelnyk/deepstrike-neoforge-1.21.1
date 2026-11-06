@@ -419,6 +419,8 @@ public final class CommandTabletScreen extends Screen {
             this.label(
                g, Component.translatable("gui.deepstrike.panel.tablet_notice").getString(), 40, this.tab.equals("tasks") ? this.height - 142 : this.height - 78, -1000096
             );
+         } else if (this.tab.equals("defense")) {
+            this.label(g, Component.translatable("gui.deepstrike.panel.defense_notice").getString(), 40, this.height - 78, -1000096);
          }
 
          if (!this.error.isEmpty()) {

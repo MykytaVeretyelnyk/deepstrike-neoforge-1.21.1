@@ -344,7 +344,8 @@ public final class TerminalMissiles {
    private static final java.util.Map<UUID, java.util.LinkedHashSet<UUID>> PANEL_SEEN = new java.util.concurrent.ConcurrentHashMap<>();
    private static final java.util.Map<UUID, String> PANEL_ERROR = new java.util.concurrent.ConcurrentHashMap<>();
    private static final java.util.Set<String> PANEL_ACTIONS = java.util.Set.of(
-      "login", "refresh", "save", "arm", "disarm", "launch", "delete", "member", "camera", "bind_unit"
+      "login", "refresh", "save", "arm", "disarm", "launch", "delete", "member", "camera", "bind_unit",
+      "defense_select", "defense_reload", "defense_toggle", "defense_fire"
    );
 
    public static void onLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {

@@ -103,15 +103,15 @@ public final class CommandDefenseScreen extends TacticalXaeroMap implements Equi
 
       for (GuiEventListener child : this.children()) {
          if (child instanceof Button button) {
-            button.active = button.getMessage().getString().equals(CommandTabletScreen.tr("back").getString())
-               || CommandTabletScreen.latestSnapshot.getInt("Role") >= 1 && r.getBoolean("Controllable");
+            button.active = button.getMessage().getString().equals(CommandTabletScreen.tr("back").getString());
          }
       }
 
       this.primary.setMessage(Component.literal(r.getBoolean("Iron") ? "TAMIR" : "PAC-2"));
-      this.primary.active = can && r.getInt("Ready0") > 0;
+      // Fire, reload and toggle are served from the Skyfront control panel only; the server answers panel_only here.
+      this.primary.active = false;
       this.secondary.visible = !r.getBoolean("Iron");
-      this.secondary.active = can && r.getInt("Ready1") > 0;
+      this.secondary.active = false;
    }
 
    @Override
@@ -175,6 +175,7 @@ public final class CommandDefenseScreen extends TacticalXaeroMap implements Equi
             r.getBoolean("Online") ? -6696818 : -1076610
          );
          FlightUi.label(g, "TAMIR / PAC-2: " + r.getInt("Ready0") + "  PAC-3: " + r.getInt("Ready1"), this.width - 270, 103, -5196890);
+         FlightUi.label(g, FlightUi.clip(Component.translatable("gui.deepstrike.panel.defense_notice").getString(), 246), this.width - 270, 114, -1000096);
       }
 
       g.enableScissor(

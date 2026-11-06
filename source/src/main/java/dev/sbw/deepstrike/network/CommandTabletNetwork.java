@@ -40,7 +40,8 @@ public final class CommandTabletNetwork {
 
    /** Actions of the tablet that are available only in the Skyfront control panel. Disarm (emergency stop) is deliberately not listed. */
    public static boolean panelOnly(String action) {
-      return "save".equals(action) || "arm".equals(action) || "launch".equals(action);
+      return "save".equals(action) || "arm".equals(action) || "launch".equals(action)
+         || "defense_fire".equals(action) || "defense_reload".equals(action) || "defense_toggle".equals(action);
    }
 
    public static void watch(UUID missile, boolean active) {

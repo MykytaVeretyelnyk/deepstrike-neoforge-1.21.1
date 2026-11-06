@@ -51,6 +51,7 @@ public class MissileTerminalScreen extends Screen {
    private EditBox nicknameBox;
    private final List<TerminalButton> bindButtons = new ArrayList<>();
    private final List<TerminalMissileNetwork.Row> bindRows = new ArrayList<>();
+   private final PanelDefenseView defenseView = new PanelDefenseView();
    private TerminalButton taskArm;
    private TerminalButton taskLaunch;
    private TerminalButton taskDisarm;
@@ -63,7 +64,8 @@ public class MissileTerminalScreen extends Screen {
       TASKS("tasks"),
       FLIGHTS("flights"),
       JOURNAL("journal"),
-      ACCESS("access");
+      ACCESS("access"),
+      DEFENSE("defense");
 
       final String key;
 
@@ -82,6 +84,7 @@ public class MissileTerminalScreen extends Screen {
       this.rows = this.received ? new ArrayList<>(cached.rows()) : new ArrayList<>();
       this.seenPanel = latestPanel(terminalPos);
       this.panel = this.seenPanel == null ? null : PanelData.parse(this.seenPanel);
+      this.defenseView.accept(this.seenPanel);
       Minecraft mc = Minecraft.getInstance();
       this.nickname = mc.player == null ? "" : mc.player.getGameProfile().getName();
    }
@@ -201,6 +204,7 @@ public class MissileTerminalScreen extends Screen {
             case TASKS -> this.panel.tasks().size();
             case FLIGHTS -> this.panel.flights().size();
             case JOURNAL -> this.panel.journal().size();
+            case DEFENSE -> 0;
             default -> this.panel.members().size();
          };
       }
@@ -268,7 +272,7 @@ public class MissileTerminalScreen extends Screen {
       for (int i = 0; i < subs.length; i++) {
          MissileTerminalScreen.Sub target = subs[i];
          TerminalButton tab = new TerminalButton(
-            left + 2 + i * 67, this.listTop() - 18, 65, SUBTAB_H, Component.translatable("gui.deepstrike.panel.sub." + target.key), b -> this.setSub(target)
+            left + 2 + i * 55, this.listTop() - 18, 54, SUBTAB_H, Component.translatable("gui.deepstrike.panel.sub." + target.key), b -> this.setSub(target)
          );
          this.addRenderableWidget(target == this.sub ? tab.style(TerminalButton.Style.LIT) : tab);
       }
@@ -286,6 +290,7 @@ public class MissileTerminalScreen extends Screen {
                }
                case JOURNAL -> {
                }
+               case DEFENSE -> this.defenseView.build(left, this.listTop(), this::addRenderableWidget, this::send);
                default -> this.buildAccess();
             }
          }
@@ -483,6 +488,10 @@ public class MissileTerminalScreen extends Screen {
       }
 
       int left = this.panelLeft();
+      if (this.sub == MissileTerminalScreen.Sub.DEFENSE) {
+         return this.defenseView.click(mouseX, mouseY, left, this.listTop());
+      }
+
       if (mouseX < (double)(left + 2) || mouseX > (double)(left + 340 - 9) || mouseY < (double)this.listTop()) {
          return false;
       }
@@ -550,6 +559,10 @@ public class MissileTerminalScreen extends Screen {
    }
 
    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+      if (this.sub == MissileTerminalScreen.Sub.DEFENSE && this.panel != null && !this.needsLogin() && this.defenseView.scroll(mouseX, mouseY, this.panelLeft(), this.listTop(), scrollY)) {
+         return true;
+      }
+
       if (this.needsScrollbar()) {
          int next = Mth.clamp(this.scrollOffset - (int)Math.signum(scrollY), 0, this.maxScroll());
          if (next != this.scrollOffset) {
@@ -583,6 +596,7 @@ public class MissileTerminalScreen extends Screen {
       CompoundTag tag = latestPanel(this.terminalPos);
       if (tag != this.seenPanel) {
          this.seenPanel = tag;
+         this.defenseView.accept(tag);
          boolean loginBefore = this.needsLogin();
          int roleBefore = this.role();
          boolean hadPanel = this.panel != null;
@@ -716,6 +730,11 @@ public class MissileTerminalScreen extends Screen {
             y += 10;
          }
 
+         return;
+      }
+
+      if (this.sub == MissileTerminalScreen.Sub.DEFENSE) {
+         this.defenseView.render(graphics, this.font, left, listTop);
          return;
       }
 
